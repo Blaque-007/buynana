@@ -127,3 +127,135 @@ th {
         grid-template-columns: 1fr;
     }
 }
+
+/* ==================================
+   BuyNana Application Layout
+================================== */
+
+.app-layout {
+    display: flex;
+    min-height: 100vh;
+    background: #1c1d19;
+}
+
+/* Sidebar */
+
+.sidebar {
+    width: 220px;
+    min-width: 220px;
+    background: #1c1d19;
+    color: #f1f0e9;
+    padding: 24px 14px;
+
+    display: flex;
+    flex-direction: column;
+
+    border-right: 1px solid #343630;
+}
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 40px;
+}
+
+.sidebar-brand h2 {
+    font-size: 22px;
+    margin: 0;
+}
+
+.brand-icon {
+    font-size: 26px;
+}
+
+.sidebar-navigation {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.navigation-link {
+    display: block;
+    padding: 12px 14px;
+    border-radius: 6px;
+
+    color: #e9e8e1;
+    text-decoration: none;
+    font-size: 14px;
+
+    transition: background 0.2s ease;
+}
+
+.navigation-link:hover {
+    background: #292b26;
+}
+
+.navigation-link.active {
+    background: #2f302d;
+    font-weight: 600;
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    padding: 16px 12px;
+    color: #b7b9af;
+    font-size: 13px;
+}
+
+/* Main Workspace */
+
+.main-workspace {
+    flex: 1;
+    min-width: 0;
+    background: #eceadd;
+    color: #11120e;
+    padding: 30px;
+    overflow-y: auto;
+}
+
+/* Temporary transaction interface */
+
+.main-workspace .app-container {
+    max-width: 1100px;
+    padding: 20px;
+}
+
+@media (max-width: 700px) {
+    .sidebar {
+        width: 160px;
+        min-width: 160px;
+        padding: 16px 8px;
+    }
+
+    .navigation-link {
+        padding: 10px;
+        font-size: 12px;
+    }
+
+    .main-workspace {
+        padding: 15px;
+    }
+}
+/* Improve readability inside dark cards */
+
+.summary-card,
+.transaction-form,
+.transaction-history {
+    color: #f5f5f5;
+}
+
+.summary-card h3,
+.transaction-form label,
+.transaction-history th {
+    color: #c5c7c5;
+}
+
+.transaction-form h2,
+.transaction-history h2 {
+    color: #ffffff;
+}
+
+.transaction-history td {
+    color: #e9e8e1;
+}
