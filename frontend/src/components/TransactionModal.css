@@ -164,3 +164,58 @@
         padding: 20px;
     }
 }
+/* Allow the modal to scroll when content is tall */
+
+.transaction-modal {
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+/* Recurring transaction section */
+
+.transaction-modal-recurring {
+    margin-top: 8px;
+    margin-bottom: 20px;
+
+    padding: 16px;
+
+    background: #deded5;
+    border: 1px solid #c8c9be;
+    border-radius: 8px;
+}
+
+.transaction-modal-recurring label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.transaction-modal-recurring input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+
+    accent-color: #1f2b37;
+    cursor: pointer;
+}
+
+.transaction-modal-recurring p {
+    margin: 10px 0 0 30px;
+
+    font-size: 12px;
+    line-height: 1.5;
+    color: #686b62;
+}
+
+/* Improve keyboard accessibility */
+
+.transaction-modal button:focus-visible,
+.transaction-modal input:focus-visible,
+.transaction-modal select:focus-visible {
+    outline: 3px solid #438b69;
+    outline-offset: 2px;
+}

@@ -254,3 +254,18 @@
         flex-wrap: wrap;
     }
 }
+.history-recurring-badge {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 20px;
+    background: #e1f3e8;
+    color: #256c45;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: capitalize;
+    white-space: nowrap;
+}
+
+.history-not-recurring {
+    color: #85877e;
+}

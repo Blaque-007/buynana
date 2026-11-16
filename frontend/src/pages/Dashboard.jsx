@@ -1,3 +1,4 @@
+import { calculateMonthlyRecurringExpenses } from "../utils/recurringCalculations";
 import { useEffect, useState } from "react";
 import BudgetOverview from "../components/BudgetOverview";
 import { getBudgets } from "../services/budgetService";
@@ -112,6 +113,9 @@ function Dashboard() {
 
   const balance = income - expenses;
 
+  const { monthlyTotal: monthlyRecurringTotal, recurringCount } =
+    calculateMonthlyRecurringExpenses(transactions);
+
   // Format amounts as US dollars
   const formatCurrency = (amount) =>
     new Intl.NumberFormat("en-US", {
@@ -171,8 +175,8 @@ function Dashboard() {
             />
 
             <SummaryCard
-              title="Recurring"
-              value="Not configured"
+              title="Recurring (est./mo.)"
+              value={formatCurrency(monthlyRecurringTotal)}
               variant="recurring"
             />
 

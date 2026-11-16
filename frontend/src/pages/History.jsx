@@ -266,6 +266,7 @@ function History() {
                   <th>Description</th>
                   <th>Category</th>
                   <th>Type</th>
+                  <th>Recurring</th>
                   <th>Amount</th>
                   <th>Action</th>
                 </tr>
@@ -288,6 +289,16 @@ function History() {
                       >
                         {transaction.type}
                       </span>
+                    </td>
+
+                    <td>
+                      {transaction.is_recurring === 1 ? (
+                        <span className="history-recurring-badge">
+                          ↻ {transaction.recurring_frequency}
+                        </span>
+                      ) : (
+                        <span className="history-not-recurring">—</span>
+                      )}
                     </td>
 
                     <td
