@@ -1,0 +1,193 @@
+/* Dashboard workspace */
+
+.dashboard-page {
+    width: 100%;
+    color: #11120e;
+}
+
+/* Top heading */
+
+.dashboard-topbar {
+    padding-bottom: 14px;
+    border-bottom: 1px solid #d8d6c8;
+}
+
+.dashboard-topbar h1 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 500;
+}
+
+/* Welcome section */
+
+.dashboard-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin: 24px 0;
+}
+
+.dashboard-heading h2 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.dashboard-heading span {
+    font-size: 14px;
+}
+
+/* Summary cards */
+
+.dashboard-summary {
+    display: grid;
+    grid-template-columns: 2.5fr 1fr 1fr 1fr;
+    gap: 12px;
+
+    margin-bottom: 24px;
+}
+
+.financial-card {
+    min-height: 105px;
+    padding: 18px 16px;
+
+    border-radius: 8px;
+    border: 1px solid #cacabd;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+}
+
+.financial-card__title {
+    font-size: 13px;
+    font-weight: 400;
+}
+
+.financial-card__value {
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.financial-card--balance {
+    background: #1f2b37;
+    color: white;
+}
+
+.financial-card--income {
+    background: #dedede;
+    color: #11120e;
+}
+
+.financial-card--recurring {
+    background: #eceadd;
+    color: #11120e;
+}
+
+.financial-card--savings {
+    background: #b4eacf;
+    color: #477b52;
+}
+
+/* Dashboard panels */
+
+.dashboard-content {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 18px;
+}
+
+.dashboard-panel {
+    border-radius: 8px;
+    overflow: hidden;
+    background: #252621;
+    border: 1px solid #c9c9bb;
+    min-height: 300px;
+}
+
+.dashboard-panel__header {
+    background: #e8e6d9;
+    padding: 14px;
+}
+
+.dashboard-panel__header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: #080a06;
+}
+
+.dashboard-panel__body {
+    padding: 16px;
+    color: #e9e8e1;
+    font-size: 14px;
+}
+
+/* Recent transactions */
+
+.recent-transactions {
+    display: flex;
+    flex-direction: column;
+}
+
+.recent-transaction {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 12px 0;
+    border-bottom: 1px solid #3a3c35;
+    gap: 12px;
+}
+
+.recent-transaction > div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.recent-transaction strong {
+    font-size: 13px;
+}
+
+.recent-transaction span {
+    color: #aeb0a5;
+    font-size: 12px;
+}
+
+.amount-income {
+    color: #80d69a;
+}
+
+.amount-expense {
+    color: #ff9292;
+}
+
+.dashboard-error {
+    color: #b42318;
+}
+
+/* Responsive layout */
+
+@media (max-width: 1100px) {
+    .dashboard-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .dashboard-content {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .dashboard-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-heading {
+        align-items: flex-start;
+        gap: 12px;
+        flex-direction: column;
+    }
+}

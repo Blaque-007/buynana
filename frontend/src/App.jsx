@@ -6,6 +6,7 @@ import {
 
 import MainLayout from "./layouts/MainLayout";
 import TransactionTest from "./pages/TransactionTest";
+import Dashboard from "./pages/Dashboard";
 import Budgets from "./pages/Budgets";
 import Forecast from "./pages/Forecast";
 import History from "./pages/History";
@@ -16,10 +17,14 @@ function App() {
         <BrowserRouter>
             <Routes>
                 <Route element={<MainLayout />}>
+                <Route
+                    path="/transaction-test"
+                    element={<TransactionTest />}
+                    />
 
                     <Route
                         path="/"
-                        element={<TransactionTest />}
+                        element={<Dashboard />}
                     />
 
                     <Route
