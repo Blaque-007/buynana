@@ -73,4 +73,46 @@ db.exec(`
 
 console.log("BuyNana budgets table ready!");
 
+// ============================================================
+// SAVINGS MANAGEMENT TABLES
+// ============================================================
+
+// Store savings goals
+db.exec(`
+    CREATE TABLE IF NOT EXISTS savings_goals (
+        goal_id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        goal_name TEXT NOT NULL,
+
+        target_amount REAL NOT NULL
+            CHECK (target_amount > 0),
+
+        created_at TEXT NOT NULL
+            DEFAULT (date('now')),
+
+        is_archived INTEGER NOT NULL DEFAULT 0
+            CHECK (is_archived IN (0, 1))
+    );
+`);
+
+// Store contributions made toward savings goals
+db.exec(`
+    CREATE TABLE IF NOT EXISTS savings_contributions (
+        contribution_id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        goal_id INTEGER NOT NULL,
+
+        amount REAL NOT NULL
+            CHECK (amount > 0),
+
+        contribution_date TEXT NOT NULL
+            DEFAULT (date('now')),
+
+        FOREIGN KEY (goal_id)
+            REFERENCES savings_goals(goal_id)
+    );
+`);
+
+console.log("BuyNana savings tables ready!");
+
 module.exports = db;
