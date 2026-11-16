@@ -24,6 +24,42 @@ db.exec(`
 
 console.log("BuyNana database connected successfully!");
 
+// Check which columns already exist in transactions
+const transactionColumns = db
+    .prepare("PRAGMA table_info(transactions)")
+    .all();
+
+const existingColumnNames = transactionColumns.map(
+    column => column.name
+);
+
+// Add recurring flag if it doesn't exist
+if (!existingColumnNames.includes("is_recurring")) {
+
+    db.exec(`
+        ALTER TABLE transactions
+        ADD COLUMN is_recurring INTEGER NOT NULL DEFAULT 0
+        CHECK (is_recurring IN (0, 1))
+    `);
+
+    console.log("Added is_recurring column.");
+}
+
+// Add recurring frequency if it doesn't exist
+if (!existingColumnNames.includes("recurring_frequency")) {
+
+    db.exec(`
+        ALTER TABLE transactions
+        ADD COLUMN recurring_frequency TEXT
+        CHECK (
+            recurring_frequency IS NULL
+            OR recurring_frequency IN ('weekly', 'monthly', 'yearly')
+        )
+    `);
+
+    console.log("Added recurring_frequency column.");
+}
+
 // Create the monthly budgets table
 db.exec(`
     CREATE TABLE IF NOT EXISTS budgets (

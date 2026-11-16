@@ -24,13 +24,26 @@ function Dashboard() {
       String(now.getMonth() + 1).padStart(2, "0"),
     ].join("-");
 
-    const [updatedTransactions, updatedBudgets] = await Promise.all([
+    const results = await Promise.allSettled([
       getTransactions(),
       getBudgets(month),
     ]);
 
-    setTransactions(updatedTransactions);
-    setBudgets(updatedBudgets);
+    const [transactionsResult, budgetsResult] = results;
+
+    if (transactionsResult.status === "fulfilled") {
+      setTransactions(transactionsResult.value);
+      setError("");
+    } else {
+      setError("Transaction saved, but dashboard data could not be refreshed.");
+    }
+
+    if (budgetsResult.status === "fulfilled") {
+      setBudgets(budgetsResult.value);
+      setBudgetsError("");
+    } else {
+      setBudgetsError("Unable to refresh budget information.");
+    }
   }
 
   // Retrieve transactions from Express
@@ -113,11 +126,6 @@ function Dashboard() {
     <div className="dashboard-page">
       <div className="dashboard-topbar">
         <h1>Dashboard</h1>
-        <TransactionModal
-          isOpen={isTransactionModalOpen}
-          onClose={() => setIsTransactionModalOpen(false)}
-          onTransactionAdded={refreshDashboard}
-        />
       </div>
 
       <div className="dashboard-heading">
@@ -230,6 +238,11 @@ function Dashboard() {
           </section>
         </>
       )}
+      <TransactionModal
+        isOpen={isTransactionModalOpen}
+        onClose={() => setIsTransactionModalOpen(false)}
+        onTransactionAdded={refreshDashboard}
+      />
     </div>
   );
 }
