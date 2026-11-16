@@ -1,5 +1,9 @@
 const db = require("../database/db");
 
+const {
+    calculateSeasonalFactor
+} = require("./seasonalService");
+
 // Retrieve monthly income and expenses from SQLite
 function getMonthlyFinancialHistory() {
     const rows = db.prepare(`
@@ -172,19 +176,21 @@ function getAvailableBalance() {
 // Historical Income + Recurring/Nonrecurring Expenses
 // ============================================================
 
+// ============================================================
+// GENERATE FINANCIAL FORECAST
+// Historical Income + Seasonal Expenses + Recurring Expenses
+// ============================================================
+
 function generateFinancialForecast() {
     const startingBalance = getAvailableBalance();
 
-    // Historical-average forecast provides income estimates.
+    // Retrieve historical income prediction.
     const historicalForecast =
         calculateHistoricalAverageForecast(startingBalance);
 
-    // Combined model provides recurring and nonrecurring expenses.
-    const expenseForecast =
-        calculateCombinedExpenseForecast();
-
     const now = new Date();
 
+    // Forecast the next calendar month.
     const forecastDate = new Date(
         now.getFullYear(),
         now.getMonth() + 1,
@@ -196,23 +202,37 @@ function generateFinancialForecast() {
         String(forecastDate.getMonth() + 1).padStart(2, "0")
     ].join("-");
 
-    const roundMoney = (value) =>
+    const targetMonth = forecastDate.getMonth() + 1;
+
+    // Retrieve seasonally adjusted expenses.
+    const expenseForecast =
+        calculateSeasonallyAdjustedExpenses(targetMonth);
+
+    const roundMoney = value =>
         Math.round((value + Number.EPSILON) * 100) / 100;
 
-    // No completed historical months means income is unknown.
-    if (historicalForecast.method !== "historical_average") {
+    // Determine whether historical data supports a complete forecast.
+    const hasHistoricalIncome =
+        historicalForecast.method === "historical_average";
+
+    const hasNonRecurringHistory =
+        expenseForecast.historical_months > 0;
+
+    // Without historical income or nonrecurring spending,
+    // we cannot generate a complete prediction.
+    if (!hasHistoricalIncome || !hasNonRecurringHistory) {
         return {
             forecast_month: forecastMonth,
             generated_at: new Date().toISOString(),
 
             method: "expected_cash_flow",
 
-            historical_months: 0,
+            historical_months:
+                expenseForecast.historical_months,
 
-            starting_balance: startingBalance,
+            starting_balance: roundMoney(startingBalance),
 
             predicted_income: null,
-
             predicted_expenses: null,
 
             predicted_recurring_expenses:
@@ -222,12 +242,14 @@ function generateFinancialForecast() {
 
             projected_ending_balance: null,
 
+            categories: expenseForecast.categories,
+
             data_quality: "insufficient_history",
 
             message:
-                "Historical income and nonrecurring spending " +
-                "are insufficient for a complete forecast. " +
-                "Expected income and expenses are required."
+                "Insufficient completed historical data. " +
+                "Expected income and expenses are required " +
+                "to generate a complete forecast."
         };
     }
 
@@ -242,15 +264,24 @@ function generateFinancialForecast() {
         predictedIncome -
         predictedExpenses;
 
+    // Check whether any category has a reliable seasonal factor.
+    const seasonalAdjustmentsApplied =
+        expenseForecast.categories.some(
+            category =>
+                category.sufficient_seasonal_history &&
+                category.seasonal_factor !== 1
+        );
+
     return {
         forecast_month: forecastMonth,
-
         generated_at: new Date().toISOString(),
 
-        method: "historical_plus_recurring",
+        method: seasonalAdjustmentsApplied
+            ? "seasonally_adjusted"
+            : "historical_plus_recurring",
 
         historical_months:
-            historicalForecast.historical_months,
+            expenseForecast.historical_months,
 
         starting_balance:
             roundMoney(startingBalance),
@@ -271,7 +302,7 @@ function generateFinancialForecast() {
             expenseForecast.predicted_recurring_expenses,
 
         predicted_nonrecurring_expenses:
-            expenseForecast.average_nonrecurring_expenses,
+            expenseForecast.predicted_nonrecurring_expenses,
 
         recurring_count:
             expenseForecast.recurring_count,
@@ -279,11 +310,18 @@ function generateFinancialForecast() {
         projected_ending_balance:
             roundMoney(projectedEndingBalance),
 
+        seasonal_adjustments_applied:
+            seasonalAdjustmentsApplied,
+
+        categories:
+            expenseForecast.categories,
+
         data_quality:
             expenseForecast.data_quality,
 
-        message:
-            expenseForecast.message
+        message: seasonalAdjustmentsApplied
+            ? "Seasonal adjustments were applied using historical spending patterns."
+            : "Insufficient seasonal history. Neutral seasonal factors were used."
     };
 }
 
@@ -525,6 +563,490 @@ message: nonRecurring.message ??
     };
 }
 
+// ============================================================
+// HISTORICAL NONRECURRING SPENDING BY CATEGORY
+// ============================================================
+
+function getAverageNonRecurringExpensesByCategory() {
+    const now = new Date();
+
+    const currentMonth = [
+        now.getFullYear(),
+        String(now.getMonth() + 1).padStart(2, "0")
+    ].join("-");
+
+    // Identify completed months containing financial activity.
+    const activityMonths = db.prepare(`
+        SELECT DISTINCT
+            substr(transaction_date, 1, 7) AS month
+
+        FROM transactions
+
+        WHERE
+            transaction_date IS NOT NULL
+            AND transaction_date GLOB
+                '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]'
+            AND substr(transaction_date, 1, 7) < ?
+
+        ORDER BY month ASC
+    `).all(currentMonth);
+
+    const monthCount = activityMonths.length;
+
+    if (monthCount === 0) {
+        return {
+            historical_months: 0,
+            categories: []
+        };
+    }
+
+    // Retrieve nonrecurring spending totals by category.
+    const categoryTotals = db.prepare(`
+        SELECT
+            category,
+
+            COALESCE(SUM(amount), 0) AS total_spending
+
+        FROM transactions
+
+        WHERE
+            type = 'expense'
+            AND COALESCE(is_recurring, 0) = 0
+            AND transaction_date IS NOT NULL
+            AND transaction_date GLOB
+                '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]'
+            AND substr(transaction_date, 1, 7) < ?
+
+        GROUP BY category
+
+        ORDER BY category ASC
+    `).all(currentMonth);
+
+    const roundMoney = value =>
+        Math.round((value + Number.EPSILON) * 100) / 100;
+
+    const categories = categoryTotals.map(record => ({
+        category: record.category,
+
+        total_spending:
+            roundMoney(record.total_spending),
+
+        average_monthly_spending:
+            roundMoney(record.total_spending / monthCount)
+    }));
+
+    return {
+        historical_months: monthCount,
+        categories
+    };
+}
+
+// ============================================================
+// SEASONALLY ADJUSTED EXPENSE FORECAST
+// ============================================================
+
+function calculateSeasonallyAdjustedExpenses(targetMonth) {
+
+    if (
+        !Number.isInteger(targetMonth) ||
+        targetMonth < 1 ||
+        targetMonth > 12
+    ) {
+        throw new Error("Target month must be between 1 and 12.");
+    }
+
+    const categoryHistory =
+        getAverageNonRecurringExpensesByCategory();
+
+    const recurring =
+        calculateMonthlyRecurringExpenses();
+
+    const roundMoney = value =>
+        Math.round((value + Number.EPSILON) * 100) / 100;
+
+    // Apply a seasonal factor to each nonrecurring category.
+    const adjustedCategories =
+        categoryHistory.categories.map(record => {
+
+            const seasonal = calculateSeasonalFactor(
+                record.category,
+                targetMonth
+            );
+
+            const adjustedAmount =
+                record.average_monthly_spending *
+                seasonal.seasonal_factor;
+
+            return {
+                category: record.category,
+
+                historical_average:
+                    record.average_monthly_spending,
+
+                seasonal_factor:
+                    seasonal.seasonal_factor,
+
+                predicted_spending:
+                    roundMoney(adjustedAmount),
+
+                sufficient_seasonal_history:
+                    seasonal.sufficient_history
+            };
+        });
+
+    const predictedNonRecurring =
+        adjustedCategories.reduce(
+            (sum, category) =>
+                sum + category.predicted_spending,
+            0
+        );
+
+    const predictedRecurring =
+        recurring.total_monthly_recurring;
+
+    const predictedTotal =
+        predictedNonRecurring + predictedRecurring;
+
+    return {
+        method: "seasonally_adjusted",
+
+        target_month: targetMonth,
+
+        historical_months:
+            categoryHistory.historical_months,
+
+        predicted_nonrecurring_expenses:
+            roundMoney(predictedNonRecurring),
+
+        predicted_recurring_expenses:
+            roundMoney(predictedRecurring),
+
+        predicted_total_expenses:
+            roundMoney(predictedTotal),
+
+        recurring_count:
+            recurring.recurring_count,
+
+        categories:
+            adjustedCategories,
+
+        data_quality:
+            categoryHistory.historical_months === 0
+                ? "insufficient_history"
+                : "activity_based"
+    };
+}
+
+// ============================================================
+// EXPECTED CASH FLOW FORECAST
+// Used when historical data is insufficient
+// ============================================================
+
+function calculateExpectedCashFlow({
+    startingBalance = 0,
+    expectedIncome,
+    expectedExpenses
+}) {
+
+    const isValidAmount = value =>
+        typeof value === "number" &&
+        Number.isFinite(value) &&
+        value >= 0;
+
+    if (
+        !isValidAmount(startingBalance)
+    ) {
+        throw new Error(
+            "Starting balance must be a non-negative number."
+        );
+    }
+
+    if (
+        !isValidAmount(expectedIncome)
+    ) {
+        throw new Error(
+            "Expected income must be a non-negative number."
+        );
+    }
+
+    if (
+        !isValidAmount(expectedExpenses)
+    ) {
+        throw new Error(
+            "Expected expenses must be a non-negative number."
+        );
+    }
+
+    const roundMoney = value =>
+        Math.round((value + Number.EPSILON) * 100) / 100;
+
+    const projectedEndingBalance =
+        startingBalance +
+        expectedIncome -
+        expectedExpenses;
+
+    return {
+        method: "expected_cash_flow",
+
+        starting_balance:
+            roundMoney(startingBalance),
+
+        predicted_income:
+            roundMoney(expectedIncome),
+
+        predicted_expenses:
+            roundMoney(expectedExpenses),
+
+        projected_ending_balance:
+            roundMoney(projectedEndingBalance),
+
+        data_quality: "user_provided",
+
+        message:
+            "Forecast calculated using expected income and expenses."
+    };
+}
+
+// ============================================================
+// HYBRID FORECAST SUGGESTIONS
+// ============================================================
+
+function getForecastSuggestions() {
+
+    const now = new Date();
+
+    const forecastDate = new Date(
+        now.getFullYear(),
+        now.getMonth() + 1,
+        1
+    );
+
+    const forecastMonth = [
+        forecastDate.getFullYear(),
+        String(forecastDate.getMonth() + 1).padStart(2, "0")
+    ].join("-");
+
+    // Retrieve the current available balance.
+    const startingBalance = getAvailableBalance();
+
+    // Retrieve historical income information.
+    const historical =
+        calculateHistoricalAverageForecast(startingBalance);
+
+    // Retrieve budgets for the forecast month.
+    const budgets = db.prepare(`
+        SELECT
+            category,
+            budget_amount,
+            budget_month
+
+        FROM budgets
+
+        WHERE budget_month = ?
+
+        ORDER BY category ASC
+    `).all(forecastMonth);
+
+    // Calculate the total budget for the forecast month.
+    const totalBudget = budgets.reduce(
+        (sum, budget) => sum + budget.budget_amount,
+        0
+    );
+
+    // Retrieve recurring expenses.
+    const recurring =
+        calculateMonthlyRecurringExpenses();
+
+    // Determine whether historical income is available.
+    const hasHistoricalIncome =
+        historical.method === "historical_average" &&
+        historical.predicted_income !== null;
+
+    const suggestedIncome = hasHistoricalIncome
+        ? historical.predicted_income
+        : null;
+
+    // Budgets are suggestions, not confirmed expenses.
+    const suggestedExpenses = budgets.length > 0
+        ? totalBudget
+        : null;
+
+    return {
+        forecast_month: forecastMonth,
+
+        starting_balance: startingBalance,
+
+        income: {
+            suggested_amount: suggestedIncome,
+
+            source: hasHistoricalIncome
+                ? "historical_average"
+                : "manual_input_required",
+
+            available: hasHistoricalIncome
+        },
+
+        expenses: {
+            suggested_amount: suggestedExpenses,
+
+            source: budgets.length > 0
+                ? "monthly_budget"
+                : "manual_input_required",
+
+            available: budgets.length > 0,
+
+            budgets: budgets
+        },
+
+        recurring_expenses: {
+            monthly_equivalent:
+                recurring.total_monthly_recurring,
+
+            recurring_count:
+                recurring.recurring_count,
+
+            available:
+                recurring.recurring_count > 0
+        },
+
+        requires_user_input:
+            !hasHistoricalIncome ||
+            budgets.length === 0
+    };
+}
+
+// ============================================================
+// HYBRID FORECAST WITH MANUAL OVERRIDES
+// ============================================================
+
+function calculateHybridForecast({
+    expectedIncome = null,
+    expectedExpenses = null
+} = {}) {
+
+    const suggestions = getForecastSuggestions();
+
+    const isValidAmount = value =>
+        typeof value === "number" &&
+        Number.isFinite(value) &&
+        value >= 0;
+
+    // Null means no manual override was provided.
+    // Zero is a valid manual override.
+    if (
+        expectedIncome !== null &&
+        !isValidAmount(expectedIncome)
+    ) {
+        throw new Error(
+            "Expected income must be a non-negative number."
+        );
+    }
+
+    if (
+        expectedExpenses !== null &&
+        !isValidAmount(expectedExpenses)
+    ) {
+        throw new Error(
+            "Expected expenses must be a non-negative number."
+        );
+    }
+
+    // Retrieve the existing historical/seasonal forecast.
+    const automaticForecast = generateFinancialForecast();
+
+    const hasAutomaticForecast =
+        automaticForecast.projected_ending_balance !== null &&
+        automaticForecast.predicted_income !== null &&
+        automaticForecast.predicted_expenses !== null;
+
+    // Income priority:
+    // Manual override -> automatic forecast -> suggestion.
+    const predictedIncome =
+        expectedIncome !== null
+            ? expectedIncome
+            : hasAutomaticForecast
+                ? automaticForecast.predicted_income
+                : suggestions.income.suggested_amount;
+
+    // Expense priority:
+    // Manual override -> automatic forecast -> budget suggestion.
+    const predictedExpenses =
+        expectedExpenses !== null
+            ? expectedExpenses
+            : hasAutomaticForecast
+                ? automaticForecast.predicted_expenses
+                : suggestions.expenses.suggested_amount;
+
+    const incomeSource =
+        expectedIncome !== null
+            ? "manual_override"
+            : hasAutomaticForecast
+                ? "automatic_forecast"
+                : suggestions.income.source;
+
+    const expenseSource =
+        expectedExpenses !== null
+            ? "manual_override"
+            : hasAutomaticForecast
+                ? "automatic_forecast"
+                : suggestions.expenses.source;
+
+    const requiresUserInput =
+        predictedIncome === null ||
+        predictedExpenses === null;
+
+    if (requiresUserInput) {
+        return {
+            forecast_month: suggestions.forecast_month,
+
+            method: "hybrid_forecast",
+
+            starting_balance:
+                suggestions.starting_balance,
+
+            predicted_income: predictedIncome,
+            predicted_expenses: predictedExpenses,
+
+            projected_ending_balance: null,
+
+            income_source: incomeSource,
+            expense_source: expenseSource,
+
+            requires_user_input: true,
+
+            message:
+                "Additional expected income or expense information is required."
+        };
+    }
+
+    const result = calculateExpectedCashFlow({
+        startingBalance: suggestions.starting_balance,
+        expectedIncome: predictedIncome,
+        expectedExpenses: predictedExpenses
+    });
+
+    return {
+        ...result,
+
+        forecast_month: suggestions.forecast_month,
+
+        method: "hybrid_forecast",
+
+        income_source: incomeSource,
+        expense_source: expenseSource,
+
+        requires_user_input: false,
+
+        seasonal_adjustments_applied:
+            hasAutomaticForecast
+                ? automaticForecast.seasonal_adjustments_applied
+                : false,
+
+        message:
+            "Forecast calculated using automatic suggestions and/or manual overrides."
+    };
+}
+
 module.exports = {
     getMonthlyFinancialHistory,
     calculateHistoricalAverageForecast,
@@ -534,5 +1056,10 @@ module.exports = {
     calculateMonthlyRecurringExpenses,
     getMonthlyNonRecurringExpenses,
     calculateAverageNonRecurringExpenses,
-    calculateCombinedExpenseForecast
+    calculateCombinedExpenseForecast,
+    getAverageNonRecurringExpensesByCategory,
+    calculateSeasonallyAdjustedExpenses,
+    calculateExpectedCashFlow,
+    getForecastSuggestions,
+    calculateHybridForecast
 };
