@@ -5,10 +5,17 @@ import { getBudgets } from "../services/budgetService";
 import TransactionModal from "../components/TransactionModal";
 import SummaryCard from "../components/SummaryCard";
 import { getTransactions } from "../services/transactionService";
+import { getSavingsSummary } from "../services/savingsService";
 
 import "./Dashboard.css";
 
 function Dashboard() {
+  const [savingsSummary, setSavingsSummary] = useState({
+    total_saved: 0,
+    monthly_saved: 0,
+  });
+  const [savingsLoading, setSavingsLoading] = useState(true);
+  const [savingsError, setSavingsError] = useState("");
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -25,10 +32,16 @@ function Dashboard() {
       String(now.getMonth() + 1).padStart(2, "0"),
     ].join("-");
 
-    const results = await Promise.allSettled([
-      getTransactions(),
-      getBudgets(month),
-    ]);
+    const [updatedTransactions, updatedBudgets, updatedSavings] =
+      await Promise.all([
+        getTransactions(),
+        getBudgets(month),
+        getSavingsSummary(month),
+      ]);
+
+    setTransactions(updatedTransactions);
+    setBudgets(updatedBudgets);
+    setSavingsSummary(updatedSavings);
 
     const [transactionsResult, budgetsResult] = results;
 
@@ -47,6 +60,41 @@ function Dashboard() {
     }
   }
 
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadSavings() {
+      try {
+        const now = new Date();
+
+        const month = [
+          now.getFullYear(),
+          String(now.getMonth() + 1).padStart(2, "0"),
+        ].join("-");
+
+        const data = await getSavingsSummary(month);
+
+        if (!cancelled) {
+          setSavingsSummary(data);
+          setSavingsError("");
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setSavingsError(err.message);
+        }
+      } finally {
+        if (!cancelled) {
+          setSavingsLoading(false);
+        }
+      }
+    }
+
+    loadSavings();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   // Retrieve transactions from Express
   useEffect(() => {
     async function loadDashboard() {
@@ -111,7 +159,27 @@ function Dashboard() {
     .filter((transaction) => transaction.type === "expense")
     .reduce((total, transaction) => total + transaction.amount, 0);
 
-  const balance = income - expenses;
+  const balance = income - expenses - savingsSummary.total_saved;
+
+  const now = new Date();
+
+  const currentMonth = [
+    now.getFullYear(),
+    String(now.getMonth() + 1).padStart(2, "0"),
+  ].join("-");
+
+  const monthlyIncome = transactions
+    .filter(
+      (transaction) =>
+        transaction.type === "income" &&
+        transaction.transaction_date.startsWith(currentMonth),
+    )
+    .reduce((total, transaction) => total + transaction.amount, 0);
+
+  const savingsRate =
+    monthlyIncome > 0
+      ? (savingsSummary.monthly_saved / monthlyIncome) * 100
+      : 0;
 
   const { monthlyTotal: monthlyRecurringTotal, recurringCount } =
     calculateMonthlyRecurringExpenses(transactions);
@@ -182,7 +250,13 @@ function Dashboard() {
 
             <SummaryCard
               title="Savings %"
-              value="Not configured"
+              value={
+                savingsLoading
+                  ? "Loading..."
+                  : savingsError
+                    ? "Unavailable"
+                    : `${savingsRate.toFixed(1)}%`
+              }
               variant="savings"
             />
           </section>

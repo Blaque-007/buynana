@@ -1,7 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 const db = require("./database/db");
-
+const savingsRoutes = require("./routes/savingsRoutes");
+const forecastRoutes = require("./routes/forecastRoutes");
 const app = express();
 const PORT = 3001;
 
@@ -15,7 +16,11 @@ app.use(
 // Allow JSON requests
 app.use(express.json());
 
+// Savings management endpoints
+app.use("/api/savings", savingsRoutes);
 
+// Financial forecasting endpoints
+app.use("/api/forecast", forecastRoutes);
 // ============================================================
 // HEALTH CHECK
 // ============================================================

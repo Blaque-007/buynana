@@ -1,0 +1,244 @@
+.savings-goals {
+    background: #252621;
+    color: #f5f5ef;
+    padding: 24px;
+    border-radius: 10px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.savings-goals-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.savings-goals-header h2 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.savings-goals-header p {
+    margin: 0;
+    color: #b8b9ae;
+    font-size: 13px;
+}
+
+.savings-goals-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+}
+
+.savings-goal-card {
+    padding: 20px;
+    background: #343630;
+    border: 1px solid #494b43;
+    border-radius: 8px;
+}
+
+.savings-goal-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.savings-goal-heading h3 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.savings-goal-heading span {
+    color: #b4eacf;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.savings-progress-track {
+    height: 10px;
+    background: #55574f;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.savings-progress-fill {
+    height: 100%;
+    background: #b4eacf;
+    border-radius: 20px;
+    transition: width 0.3s ease;
+}
+
+.savings-goal-amounts {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 12px;
+    font-size: 12px;
+    color: #e5e6dc;
+}
+
+.savings-goal-remaining {
+    margin: 14px 0 0;
+    color: #b8b9ae;
+    font-size: 12px;
+}
+
+.savings-empty {
+    padding: 24px;
+    border: 1px dashed #66685f;
+    border-radius: 8px;
+    text-align: center;
+    color: #b8b9ae;
+}
+
+.savings-error {
+    color: #ff9b9b;
+}
+/* Create and edit goal buttons */
+
+.savings-primary-button {
+    background: #b4eacf;
+    color: #1c1d19;
+    border: none;
+    border-radius: 7px;
+    padding: 11px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.savings-primary-button:hover {
+    background: #9bdcb9;
+}
+
+.savings-secondary-button {
+    background: transparent;
+    color: #f5f5ef;
+    border: 1px solid #777970;
+    border-radius: 7px;
+    padding: 11px 16px;
+    cursor: pointer;
+}
+
+.savings-edit-button {
+    margin-top: 18px;
+    padding: 8px 12px;
+    background: transparent;
+    color: #b4eacf;
+    border: 1px solid #b4eacf;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.savings-edit-button:hover {
+    background: #414f43;
+}
+
+/* Savings goal form */
+
+.savings-goal-form {
+    background: #343630;
+    border: 1px solid #56594f;
+    border-radius: 8px;
+    padding: 22px;
+    margin-bottom: 22px;
+}
+
+.savings-goal-form h3 {
+    margin: 0 0 20px;
+    font-size: 17px;
+}
+
+.savings-goal-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+
+.savings-goal-field label {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.savings-goal-field input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    background: #eceadd;
+    color: #1c1d19;
+    border: 1px solid #b8b9ae;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.savings-goal-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.savings-primary-button:focus-visible,
+.savings-secondary-button:focus-visible,
+.savings-edit-button:focus-visible,
+.savings-goal-field input:focus-visible {
+    outline: 3px solid #b4eacf;
+    outline-offset: 3px;
+}
+
+.savings-primary-button:disabled,
+.savings-secondary-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+/* Savings goal actions */
+
+.savings-goal-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.savings-goal-actions .savings-edit-button {
+    margin-top: 0;
+}
+
+.savings-delete-button {
+    margin-right: auto;
+    padding: 11px 16px;
+    background: #6b2929;
+    color: #ffffff;
+    border: 1px solid #e39a9a;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.savings-delete-button:hover {
+    background: #843333;
+}
+
+.savings-delete-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.savings-delete-button:focus-visible {
+    outline: 3px solid #b4eacf;
+    outline-offset: 3px;
+}
+
+.savings-goal-actions button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
