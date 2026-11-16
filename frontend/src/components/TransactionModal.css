@@ -1,0 +1,166 @@
+/* Modal background */
+
+.transaction-modal-overlay {
+    position: fixed;
+    inset: 0;
+
+    background: rgba(0, 0, 0, 0.65);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 20px;
+    z-index: 1000;
+}
+
+/* Modal container */
+
+.transaction-modal {
+    width: 100%;
+    max-width: 460px;
+
+    background: #eceadd;
+    color: #171914;
+
+    border-radius: 14px;
+    padding: 28px;
+
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+/* Header */
+
+.transaction-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    margin-bottom: 24px;
+}
+
+.transaction-modal-header h2 {
+    margin: 0 0 6px;
+    font-size: 24px;
+}
+
+.transaction-modal-header p {
+    margin: 0;
+    font-size: 13px;
+    color: #686b62;
+}
+
+.transaction-modal-close {
+    background: transparent;
+    border: none;
+    color: #171914;
+
+    font-size: 28px;
+    cursor: pointer;
+}
+
+/* Transaction type buttons */
+
+.transaction-modal-type {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+    gap: 10px;
+    margin-bottom: 22px;
+}
+
+.transaction-modal-type button {
+    padding: 12px;
+    border-radius: 8px;
+
+    background: #deded5;
+    color: #252621;
+
+    border: 1px solid #c8c9be;
+    cursor: pointer;
+}
+
+.transaction-modal-type button.selected {
+    background: #1f2b37;
+    color: #ffffff;
+    border-color: #1f2b37;
+}
+
+/* Form fields */
+
+.transaction-modal-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    margin-bottom: 18px;
+}
+
+.transaction-modal-field label {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.transaction-modal-field input,
+.transaction-modal-field select {
+    width: 100%;
+    padding: 12px;
+
+    border: 1px solid #c8c9be;
+    border-radius: 7px;
+
+    background: #ffffff;
+    color: #171914;
+
+    font-size: 14px;
+}
+
+/* Buttons */
+
+.transaction-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+
+    margin-top: 24px;
+}
+
+.transaction-modal-actions button {
+    padding: 12px 18px;
+    border-radius: 7px;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.transaction-modal-cancel {
+    background: #deded5;
+    color: #171914;
+}
+
+.transaction-modal-submit {
+    background: #b4eacf;
+    color: #1c3423;
+}
+
+.transaction-modal-submit:hover {
+    background: #9edbb9;
+}
+
+.transaction-modal-actions button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.transaction-modal-error {
+    color: #b42318;
+    font-size: 13px;
+}
+
+@media (max-width: 500px) {
+    .transaction-modal {
+        padding: 20px;
+    }
+}

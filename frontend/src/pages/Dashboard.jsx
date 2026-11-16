@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import BudgetOverview from "../components/BudgetOverview";
 import { getBudgets } from "../services/budgetService";
-
+import TransactionModal from "../components/TransactionModal";
 import SummaryCard from "../components/SummaryCard";
 import { getTransactions } from "../services/transactionService";
 
@@ -14,6 +14,24 @@ function Dashboard() {
   const [budgets, setBudgets] = useState([]);
   const [budgetsLoading, setBudgetsLoading] = useState(true);
   const [budgetsError, setBudgetsError] = useState("");
+  const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
+
+  async function refreshDashboard() {
+    const now = new Date();
+
+    const month = [
+      now.getFullYear(),
+      String(now.getMonth() + 1).padStart(2, "0"),
+    ].join("-");
+
+    const [updatedTransactions, updatedBudgets] = await Promise.all([
+      getTransactions(),
+      getBudgets(month),
+    ]);
+
+    setTransactions(updatedTransactions);
+    setBudgets(updatedBudgets);
+  }
 
   // Retrieve transactions from Express
   useEffect(() => {
@@ -95,17 +113,32 @@ function Dashboard() {
     <div className="dashboard-page">
       <div className="dashboard-topbar">
         <h1>Dashboard</h1>
+        <TransactionModal
+          isOpen={isTransactionModalOpen}
+          onClose={() => setIsTransactionModalOpen(false)}
+          onTransactionAdded={refreshDashboard}
+        />
       </div>
 
       <div className="dashboard-heading">
         <h2>Welcome back, Jane</h2>
 
-        <span>
-          {new Date().toLocaleDateString("en-US", {
-            month: "short",
-            year: "numeric",
-          })}
-        </span>
+        <div className="dashboard-heading-actions">
+          <span>
+            {new Date().toLocaleDateString("en-US", {
+              month: "short",
+              year: "numeric",
+            })}
+          </span>
+
+          <button
+            type="button"
+            className="dashboard-add-button"
+            onClick={() => setIsTransactionModalOpen(true)}
+          >
+            + Add Transaction
+          </button>
+        </div>
       </div>
 
       {error && (

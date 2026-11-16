@@ -225,3 +225,32 @@
         flex-direction: column;
     }
 }
+.history-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.history-add-button {
+    padding: 12px 18px;
+    border: none;
+    border-radius: 8px;
+
+    background: #1f2b37;
+    color: #ffffff;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.history-add-button:hover {
+    background: #34485c;
+}
+
+@media (max-width: 600px) {
+    .history-header-actions {
+        flex-wrap: wrap;
+    }
+}

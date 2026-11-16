@@ -277,3 +277,32 @@
     flex-direction: column;
     gap: 12px;
 }
+.dashboard-heading-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.dashboard-add-button {
+    padding: 12px 18px;
+    border: none;
+    border-radius: 8px;
+
+    background: #1f2b37;
+    color: #ffffff;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.dashboard-add-button:hover {
+    background: #34485c;
+}
+
+@media (max-width: 700px) {
+    .dashboard-heading-actions {
+        flex-wrap: wrap;
+    }
+}
