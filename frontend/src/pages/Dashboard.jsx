@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import BudgetOverview from "../components/BudgetOverview";
+import { getBudgets } from "../services/budgetService";
 
 import SummaryCard from "../components/SummaryCard";
 import { getTransactions } from "../services/transactionService";
@@ -6,176 +8,197 @@ import { getTransactions } from "../services/transactionService";
 import "./Dashboard.css";
 
 function Dashboard() {
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [budgets, setBudgets] = useState([]);
+  const [budgetsLoading, setBudgetsLoading] = useState(true);
+  const [budgetsError, setBudgetsError] = useState("");
 
-    const [transactions, setTransactions] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
+  // Retrieve transactions from Express
+  useEffect(() => {
+    async function loadDashboard() {
+      try {
+        const data = await getTransactions();
 
-    // Retrieve transactions from Express
-    useEffect(() => {
-        async function loadDashboard() {
-            try {
-                const data = await getTransactions();
+        setTransactions(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
 
-                setTransactions(data);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
+    loadDashboard();
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadBudgets() {
+      setBudgetsLoading(true);
+
+      try {
+        const now = new Date();
+
+        const month = [
+          now.getFullYear(),
+          String(now.getMonth() + 1).padStart(2, "0"),
+        ].join("-");
+
+        const data = await getBudgets(month);
+
+        if (!cancelled) {
+          setBudgets(data);
+          setBudgetsError("");
         }
+      } catch (err) {
+        if (!cancelled) {
+          setBudgetsError(err.message);
+        }
+      } finally {
+        if (!cancelled) {
+          setBudgetsLoading(false);
+        }
+      }
+    }
 
-        loadDashboard();
-    }, []);
+    loadBudgets();
 
-    // Calculate financial totals
-    const income = transactions
-        .filter(transaction => transaction.type === "income")
-        .reduce((total, transaction) => total + transaction.amount, 0);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
-    const expenses = transactions
-        .filter(transaction => transaction.type === "expense")
-        .reduce((total, transaction) => total + transaction.amount, 0);
+  // Calculate financial totals
+  const income = transactions
+    .filter((transaction) => transaction.type === "income")
+    .reduce((total, transaction) => total + transaction.amount, 0);
 
-    const balance = income - expenses;
+  const expenses = transactions
+    .filter((transaction) => transaction.type === "expense")
+    .reduce((total, transaction) => total + transaction.amount, 0);
 
-    // Format amounts as US dollars
-    const formatCurrency = amount =>
-        new Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "USD"
-        }).format(amount);
+  const balance = income - expenses;
 
-    // Display the five most recent transactions
-    const recentTransactions = transactions.slice(0, 5);
+  // Format amounts as US dollars
+  const formatCurrency = (amount) =>
+    new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(amount);
 
-    return (
-        <div className="dashboard-page">
+  // Display the five most recent transactions
+  const recentTransactions = transactions.slice(0, 5);
 
-            <div className="dashboard-topbar">
-                <h1>Dashboard</h1>
+  return (
+    <div className="dashboard-page">
+      <div className="dashboard-topbar">
+        <h1>Dashboard</h1>
+      </div>
+
+      <div className="dashboard-heading">
+        <h2>Welcome back, Jane</h2>
+
+        <span>
+          {new Date().toLocaleDateString("en-US", {
+            month: "short",
+            year: "numeric",
+          })}
+        </span>
+      </div>
+
+      {error && (
+        <p className="dashboard-error">Unable to load dashboard: {error}</p>
+      )}
+
+      {loading ? (
+        <p>Loading dashboard...</p>
+      ) : (
+        <>
+          <section className="dashboard-summary">
+            <SummaryCard
+              title="Available Balance"
+              value={formatCurrency(balance)}
+              variant="balance"
+            />
+
+            <SummaryCard
+              title="Income"
+              value={formatCurrency(income)}
+              variant="income"
+            />
+
+            <SummaryCard
+              title="Recurring"
+              value="Not configured"
+              variant="recurring"
+            />
+
+            <SummaryCard
+              title="Savings %"
+              value="Not configured"
+              variant="savings"
+            />
+          </section>
+
+          <section className="dashboard-content">
+            <div className="dashboard-panel">
+              <div className="dashboard-panel__header">
+                <h3>Budget Overview</h3>
+              </div>
+
+              <div className="dashboard-panel__body">
+                <BudgetOverview
+                  budgets={budgets}
+                  loading={budgetsLoading}
+                  error={budgetsError}
+                />
+              </div>
             </div>
 
-            <div className="dashboard-heading">
-                <h2>Welcome back, Jane</h2>
+            <div className="dashboard-panel">
+              <div className="dashboard-panel__header">
+                <h3>Recent Transactions</h3>
+              </div>
 
-                <span>
-                    {new Date().toLocaleDateString("en-US", {
-                        month: "short",
-                        year: "numeric"
-                    })}
-                </span>
+              <div className="dashboard-panel__body">
+                {recentTransactions.length === 0 ? (
+                  <p>No transactions recorded yet.</p>
+                ) : (
+                  <div className="recent-transactions">
+                    {recentTransactions.map((transaction) => (
+                      <div
+                        className="recent-transaction"
+                        key={transaction.transaction_id}
+                      >
+                        <div>
+                          <strong>{transaction.description}</strong>
+
+                          <span>{transaction.category}</span>
+                        </div>
+
+                        <strong
+                          className={
+                            transaction.type === "income"
+                              ? "amount-income"
+                              : "amount-expense"
+                          }
+                        >
+                          {transaction.type === "income" ? "+" : "-"}
+                          {formatCurrency(transaction.amount)}
+                        </strong>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
-
-            {error && (
-                <p className="dashboard-error">
-                    Unable to load dashboard: {error}
-                </p>
-            )}
-
-            {loading ? (
-                <p>Loading dashboard...</p>
-            ) : (
-                <>
-                    <section className="dashboard-summary">
-
-                        <SummaryCard
-                            title="Available Balance"
-                            value={formatCurrency(balance)}
-                            variant="balance"
-                        />
-
-                        <SummaryCard
-                            title="Income"
-                            value={formatCurrency(income)}
-                            variant="income"
-                        />
-
-                        <SummaryCard
-                            title="Recurring"
-                            value="Not configured"
-                            variant="recurring"
-                        />
-
-                        <SummaryCard
-                            title="Savings %"
-                            value="Not configured"
-                            variant="savings"
-                        />
-
-                    </section>
-
-                    <section className="dashboard-content">
-
-                        <div className="dashboard-panel">
-
-                            <div className="dashboard-panel__header">
-                                <h3>Budget Overview</h3>
-                            </div>
-
-                            <div className="dashboard-panel__body">
-                                <p>
-                                    Budget tracking will appear here
-                                    once category budgets are configured.
-                                </p>
-                            </div>
-
-                        </div>
-
-                        <div className="dashboard-panel">
-
-                            <div className="dashboard-panel__header">
-                                <h3>Recent Transactions</h3>
-                            </div>
-
-                            <div className="dashboard-panel__body">
-
-                                {recentTransactions.length === 0 ? (
-                                    <p>No transactions recorded yet.</p>
-                                ) : (
-                                    <div className="recent-transactions">
-
-                                        {recentTransactions.map(transaction => (
-                                            <div
-                                                className="recent-transaction"
-                                                key={transaction.transaction_id}
-                                            >
-                                                <div>
-                                                    <strong>
-                                                        {transaction.description}
-                                                    </strong>
-
-                                                    <span>
-                                                        {transaction.category}
-                                                    </span>
-                                                </div>
-
-                                                <strong
-                                                    className={
-                                                        transaction.type === "income"
-                                                            ? "amount-income"
-                                                            : "amount-expense"
-                                                    }
-                                                >
-                                                    {transaction.type === "income" ? "+" : "-"}
-                                                    {formatCurrency(transaction.amount)}
-                                                </strong>
-                                            </div>
-                                        ))}
-
-                                    </div>
-                                )}
-
-                            </div>
-
-                        </div>
-
-                    </section>
-                </>
-            )}
-
-        </div>
-    );
+          </section>
+        </>
+      )}
+    </div>
+  );
 }
 
 export default Dashboard;
