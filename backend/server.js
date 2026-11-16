@@ -77,6 +77,122 @@ app.post("/api/transactions", (req, res) => {
     }
 });
 
+// Retrieve budgets for a specific month
+app.get("/api/budgets", (req, res) => {
+    try {
+        const month = req.query.month;
+
+        if (!month || !/^\d{4}-(0[1-9]|1[0-2])$/.test(month)) {
+            return res.status(400).json({
+                error: "A valid month is required (YYYY-MM)"
+            });
+        }
+
+        const budgets = db.prepare(`
+            SELECT
+                b.budget_id,
+                b.category,
+                b.budget_amount,
+                b.budget_month,
+
+                COALESCE(SUM(t.amount), 0) AS spent
+
+            FROM budgets b
+
+            LEFT JOIN transactions t
+                ON t.category = b.category
+                AND t.type = 'expense'
+                AND substr(t.transaction_date, 1, 7) = b.budget_month
+
+            WHERE b.budget_month = ?
+
+            GROUP BY
+                b.budget_id,
+                b.category,
+                b.budget_amount,
+                b.budget_month
+
+            ORDER BY b.category
+        `).all(month);
+
+        const results = budgets.map(budget => ({
+            ...budget,
+            remaining: budget.budget_amount - budget.spent,
+            percentage_used: Math.round(
+                (budget.spent / budget.budget_amount) * 100
+            )
+        }));
+
+        res.json(results);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            error: "Unable to retrieve budgets"
+        });
+    }
+});
+
+// Create a monthly budget
+app.post("/api/budgets", (req, res) => {
+    try {
+        const {
+            category,
+            budget_amount,
+            budget_month
+        } = req.body;
+
+        if (
+            typeof category !== "string" ||
+            !category.trim() ||
+            typeof budget_amount !== "number" ||
+            !Number.isFinite(budget_amount) ||
+            budget_amount <= 0 ||
+            typeof budget_month !== "string" ||
+            !/^\d{4}-(0[1-9]|1[0-2])$/.test(budget_month)
+        ) {
+            return res.status(400).json({
+                error: "Invalid budget information"
+            });
+        }
+
+        const result = db.prepare(`
+            INSERT INTO budgets (
+                category,
+                budget_amount,
+                budget_month
+            )
+            VALUES (?, ?, ?)
+        `).run(
+            category.trim(),
+            budget_amount,
+            budget_month
+        );
+
+        const budget = db.prepare(`
+            SELECT *
+            FROM budgets
+            WHERE budget_id = ?
+        `).get(result.lastInsertRowid);
+
+        res.status(201).json(budget);
+
+    } catch (error) {
+
+        if (error.code === "SQLITE_CONSTRAINT_UNIQUE") {
+            return res.status(409).json({
+                error: "A budget already exists for this category and month"
+            });
+        }
+
+        console.error(error);
+
+        res.status(500).json({
+            error: "Unable to create budget"
+        });
+    }
+});
+
 // Start the server
 app.listen(PORT, () => {
     console.log(`BuyNana backend running on http://localhost:${PORT}`);

@@ -24,4 +24,17 @@ db.exec(`
 
 console.log("BuyNana database connected successfully!");
 
+// Create the monthly budgets table
+db.exec(`
+    CREATE TABLE IF NOT EXISTS budgets (
+        budget_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        category TEXT NOT NULL,
+        budget_amount REAL NOT NULL CHECK (budget_amount > 0),
+        budget_month TEXT NOT NULL,
+        UNIQUE(category, budget_month)
+    );
+`);
+
+console.log("BuyNana budgets table ready!");
+
 module.exports = db;
