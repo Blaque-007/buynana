@@ -1,0 +1,227 @@
+.history-page {
+    width: 100%;
+    max-width: 1300px;
+    margin: 0 auto;
+    color: #171914;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 28px;
+}
+
+.history-header h1 {
+    margin: 0 0 6px;
+    font-size: 28px;
+}
+
+.history-header p {
+    margin: 0;
+    color: #686b62;
+}
+
+.history-count {
+    font-size: 13px;
+    color: #686b62;
+}
+
+/* Filters */
+
+.history-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 14px;
+    padding: 20px;
+    margin-bottom: 22px;
+    background: #ffffff;
+    border: 1px solid #d8d9d0;
+    border-radius: 10px;
+}
+
+.history-filter-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 130px;
+}
+
+.history-search {
+    flex: 1;
+    min-width: 200px;
+}
+
+.history-filter-field label {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.history-filter-field input,
+.history-filter-field select {
+    width: 100%;
+    background: #f8f8f4;
+    color: #171914;
+    border: 1px solid #c9cbbf;
+    border-radius: 6px;
+    padding: 11px;
+}
+
+.history-clear-button {
+    background: #252621;
+    color: #ffffff;
+    padding: 12px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* Summary cards */
+
+.history-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.history-summary-card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 22px;
+    background: #252b28;
+    color: #ffffff;
+    border-radius: 10px;
+}
+
+.history-summary-card span {
+    color: #c6cdc5;
+    font-size: 13px;
+}
+
+.history-summary-card strong {
+    font-size: 25px;
+}
+
+/* Table */
+
+.history-table-panel {
+    background: #ffffff;
+    border: 1px solid #d8d9d0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.history-table-header {
+    padding: 20px;
+    border-bottom: 1px solid #e3e5dc;
+}
+
+.history-table-header h2 {
+    margin: 0;
+    font-size: 19px;
+}
+
+.history-table-scroll {
+    overflow-x: auto;
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.history-table th {
+    background: #f5f5ef;
+    color: #686b62;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 15px;
+}
+
+.history-table td {
+    padding: 15px;
+    border-bottom: 1px solid #e9eae3;
+    font-size: 13px;
+    color: #252621;
+}
+
+.history-description {
+    font-weight: 600;
+}
+
+.history-income {
+    color: #287a40 !important;
+    font-weight: 600;
+}
+
+.history-expense {
+    color: #bd514a !important;
+    font-weight: 600;
+}
+
+/* Type badges */
+
+.history-type-badge {
+    display: inline-block;
+    padding: 5px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    text-transform: capitalize;
+}
+
+.history-type-badge.income {
+    background: #e2f5e5;
+    color: #287a40;
+}
+
+.history-type-badge.expense {
+    background: #fce8e5;
+    color: #bd514a;
+}
+
+/* Delete button */
+
+.history-delete-button {
+    background: #fce8e5;
+    color: #a3322b;
+    border: 1px solid #edc4bf;
+    border-radius: 6px;
+    padding: 7px 12px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.history-delete-button:hover {
+    background: #f5d4cf;
+}
+
+.history-delete-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.history-message {
+    padding: 24px;
+    color: #686b62;
+}
+
+.history-error {
+    color: #b42318;
+}
+
+@media (max-width: 900px) {
+    .history-summary {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .history-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}

@@ -29,3 +29,22 @@ export async function addTransaction(transaction) {
 
     return data;
 }
+// Delete a transaction
+export async function deleteTransaction(id) {
+    const response = await fetch(
+        `http://localhost:3001/api/transactions/${id}`,
+        {
+            method: "DELETE"
+        }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.error || "Failed to delete transaction"
+        );
+    }
+
+    return data;
+}

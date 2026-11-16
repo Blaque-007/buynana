@@ -193,6 +193,45 @@ app.post("/api/budgets", (req, res) => {
     }
 });
 
+// Delete a transaction by its ID
+app.delete("/api/transactions/:id", (req, res) => {
+    try {
+        const id = Number(req.params.id);
+
+        // Validate the transaction ID
+        if (!Number.isSafeInteger(id) || id <= 0) {
+            return res.status(400).json({
+                error: "Invalid transaction ID"
+            });
+        }
+
+        // Delete the matching transaction
+        const result = db.prepare(`
+            DELETE FROM transactions
+            WHERE transaction_id = ?
+        `).run(id);
+
+        // Check whether a transaction was deleted
+        if (result.changes === 0) {
+            return res.status(404).json({
+                error: "Transaction not found"
+            });
+        }
+
+        res.json({
+            message: "Transaction deleted successfully",
+            transaction_id: id
+        });
+
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            error: "Unable to delete transaction"
+        });
+    }
+});
+
 // Start the server
 app.listen(PORT, () => {
     console.log(`BuyNana backend running on http://localhost:${PORT}`);
