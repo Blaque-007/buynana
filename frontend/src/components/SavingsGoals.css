@@ -1,244 +1,31 @@
-.savings-goals {
-    background: #252621;
-    color: #f5f5ef;
-    padding: 24px;
-    border-radius: 10px;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-.savings-goals-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-}
-
-.savings-goals-header h2 {
-    margin: 0 0 6px;
-    font-size: 20px;
-    font-weight: 600;
-}
-
-.savings-goals-header p {
-    margin: 0;
-    color: #b8b9ae;
-    font-size: 13px;
-}
-
-.savings-goals-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 16px;
-}
-
-.savings-goal-card {
-    padding: 20px;
-    background: #343630;
-    border: 1px solid #494b43;
-    border-radius: 8px;
-}
-
-.savings-goal-heading {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 18px;
-}
-
-.savings-goal-heading h3 {
-    margin: 0;
-    font-size: 15px;
-    font-weight: 600;
-}
-
-.savings-goal-heading span {
-    color: #b4eacf;
-    font-size: 14px;
-    font-weight: 700;
-}
-
-.savings-progress-track {
-    height: 10px;
-    background: #55574f;
-    border-radius: 20px;
-    overflow: hidden;
-}
-
-.savings-progress-fill {
-    height: 100%;
-    background: #b4eacf;
-    border-radius: 20px;
-    transition: width 0.3s ease;
-}
-
-.savings-goal-amounts {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    margin-top: 12px;
-    font-size: 12px;
-    color: #e5e6dc;
-}
-
-.savings-goal-remaining {
-    margin: 14px 0 0;
-    color: #b8b9ae;
-    font-size: 12px;
-}
-
-.savings-empty {
-    padding: 24px;
-    border: 1px dashed #66685f;
-    border-radius: 8px;
-    text-align: center;
-    color: #b8b9ae;
-}
-
-.savings-error {
-    color: #ff9b9b;
-}
-/* Create and edit goal buttons */
-
-.savings-primary-button {
-    background: #b4eacf;
-    color: #1c1d19;
-    border: none;
-    border-radius: 7px;
-    padding: 11px 16px;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-}
-
-.savings-primary-button:hover {
-    background: #9bdcb9;
-}
-
-.savings-secondary-button {
-    background: transparent;
-    color: #f5f5ef;
-    border: 1px solid #777970;
-    border-radius: 7px;
-    padding: 11px 16px;
-    cursor: pointer;
-}
-
-.savings-edit-button {
-    margin-top: 18px;
-    padding: 8px 12px;
-    background: transparent;
-    color: #b4eacf;
-    border: 1px solid #b4eacf;
-    border-radius: 6px;
-    font-size: 12px;
-    cursor: pointer;
-}
-
-.savings-edit-button:hover {
-    background: #414f43;
-}
-
-/* Savings goal form */
-
-.savings-goal-form {
-    background: #343630;
-    border: 1px solid #56594f;
-    border-radius: 8px;
-    padding: 22px;
-    margin-bottom: 22px;
-}
-
-.savings-goal-form h3 {
-    margin: 0 0 20px;
-    font-size: 17px;
-}
-
-.savings-goal-field {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-bottom: 18px;
-}
-
-.savings-goal-field label {
-    font-size: 13px;
-    font-weight: 600;
-}
-
-.savings-goal-field input {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 12px;
-    background: #eceadd;
-    color: #1c1d19;
-    border: 1px solid #b8b9ae;
-    border-radius: 6px;
-    font-size: 14px;
-}
-
-.savings-goal-form-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    margin-top: 20px;
-}
-
-.savings-primary-button:focus-visible,
-.savings-secondary-button:focus-visible,
-.savings-edit-button:focus-visible,
-.savings-goal-field input:focus-visible {
-    outline: 3px solid #b4eacf;
-    outline-offset: 3px;
-}
-
-.savings-primary-button:disabled,
-.savings-secondary-button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-/* Savings goal actions */
-
-.savings-goal-actions {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 18px;
-}
-
-.savings-goal-actions .savings-edit-button {
-    margin-top: 0;
-}
-
-.savings-delete-button {
-    margin-right: auto;
-    padding: 11px 16px;
-    background: #6b2929;
-    color: #ffffff;
-    border: 1px solid #e39a9a;
-    border-radius: 7px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.savings-delete-button:hover {
-    background: #843333;
-}
-
-.savings-delete-button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.savings-delete-button:focus-visible {
-    outline: 3px solid #b4eacf;
-    outline-offset: 3px;
-}
-
-.savings-goal-actions button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
+.savings-goals {background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:25px;color:var(--ink)}
+.savings-goals-header {display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:23px}
+.savings-goals-header h2 {margin:0 0 5px}.savings-goals-header p {margin:0;color:var(--muted);font-size:.91rem}
+.savings-goals-list {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.savings-goal-card {border:1px solid #cfddd2;background:#f8faf7;border-radius:12px;padding:20px}
+.savings-goal-heading {display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.savings-goal-heading h3 {margin:0;font-size:1.04rem}.savings-goal-heading span {font-weight:800;font-size:1rem;color:#155f41}
+.savings-progress-track {height:13px;border-radius:50px;background:#e0e8de;overflow:hidden}
+.savings-progress-fill {height:100%;background:#19765b;border-radius:inherit;transition:width .25s}
+.savings-goal-amounts {display:flex;justify-content:space-between;gap:12px;margin-top:12px;color:#304d40;font-size:.88rem;font-weight:700;flex-wrap:wrap}
+.savings-goal-remaining {font-size:.87rem;margin:8px 0 0;color:var(--muted)}
+.savings-primary-button,.savings-secondary-button,.savings-edit-button,.savings-delete-button {min-height:44px;margin:0;padding:9px 15px;border-radius:9px;font-weight:750;font-size:.89rem;cursor:pointer}
+.savings-primary-button {background:#145e46;color:white;border:1px solid #145e46}
+.savings-primary-button:hover {background:#0a4d35}
+.savings-secondary-button,.savings-edit-button {background:#edf5ee;color:#17563e;border:1px solid #b9d0c1}
+.savings-secondary-button:hover,.savings-edit-button:hover {background:#dbebdf}
+.savings-delete-button {background:#fff0ef;color:#8c2731;border:1px solid #e3b5b8;margin-right:auto}
+.savings-delete-button:hover {background:#f7dadc}
+.savings-goal-actions {display:flex;gap:10px;flex-wrap:wrap;margin-top:19px}
+.savings-goal-form {background:#f3f8f3;border:1px solid var(--line);border-radius:12px;padding:23px;margin:0 0 23px}
+.savings-goal-form h3 {margin:0 0 19px}
+.savings-goal-form>p {color:var(--muted)}
+.savings-goal-field {display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.savings-goal-field label {font-size:.9rem}
+.savings-goal-field input {width:100%;background:white;color:var(--ink)}
+.savings-goal-field small {color:var(--muted);font-size:.84rem}
+.savings-goal-form-actions {display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin-top:20px}
+.savings-empty {border:1px dashed #b9cbbd;border-radius:10px;padding:26px;color:var(--muted);font-size:.91rem}
+.savings-error {padding:11px;color:#8b242b;background:#fce8e8;border-radius:8px}
+@media(max-width:800px){.savings-goals-list{grid-template-columns:1fr}}
+@media(max-width:520px){.savings-goals{padding:17px}.savings-goals-header{align-items:flex-start;flex-direction:column}}

@@ -16,12 +16,14 @@ function SavingsGoalForm({
   const [name, setName] = useState(goal?.goal_name ?? "");
   const [target, setTarget] = useState(goal?.target_amount?.toString() ?? "");
 
+  const [monthlyAllocation, setMonthlyAllocation] = useState(goal?.monthly_allocation?.toString() ?? "0");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
     setName(goal?.goal_name ?? "");
     setTarget(goal?.target_amount?.toString() ?? "");
+    setMonthlyAllocation(goal?.monthly_allocation?.toString() ?? "0");
     setError("");
   }, [goal]);
 
@@ -42,6 +44,11 @@ function SavingsGoalForm({
       return;
     }
 
+    const allocation = Number(monthlyAllocation);
+    if (!Number.isFinite(allocation) || allocation < 0) {
+      setError("Planned monthly savings must be zero or greater.");
+      return;
+    }
     setSaving(true);
     setError("");
 
@@ -49,6 +56,7 @@ function SavingsGoalForm({
       const goalData = {
         goal_name: name.trim(),
         target_amount: targetAmount,
+        monthly_allocation: allocation,
       };
 
       if (isEditing) {
@@ -96,6 +104,13 @@ function SavingsGoalForm({
           placeholder="e.g. 2500"
           required
         />
+      </div>
+
+      <div className="savings-goal-field">
+        <label htmlFor="savings-goal-allocation">Planned monthly contribution ($)</label>
+        <input id="savings-goal-allocation" type="number" min="0" step="0.01"
+          value={monthlyAllocation} onChange={event=>setMonthlyAllocation(event.target.value)} required />
+        <small>Used only for future forecasts; no actual savings will be transferred automatically.</small>
       </div>
 
       {error && (

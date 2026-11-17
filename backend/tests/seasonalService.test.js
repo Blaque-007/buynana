@@ -1,4 +1,4 @@
-const Database = require("better-sqlite3");
+const {DatabaseSync} = require("node:sqlite");
 
 const {
     createSeasonalService
@@ -6,7 +6,7 @@ const {
 
 // Create an in-memory database.
 // Nothing is written to BuyNana's actual SQLite database.
-const testDb = new Database(":memory:");
+const testDb = new DatabaseSync(":memory:");
 
 testDb.exec(`
     CREATE TABLE transactions (

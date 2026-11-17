@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import { getBudgets, addBudget } from "../services/budgetService";
+import MonthPicker from "../components/MonthPicker";
+import ConfirmDialog from "../components/ConfirmDialog";
+import {monthLabel,money} from "../utils/format";
+import { getBudgets, addBudget, updateBudget, deleteBudget } from "../services/budgetService";
 
 import "./Budgets.css";
 
@@ -25,6 +28,9 @@ function Budgets() {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
+    const [editingBudget,setEditingBudget]=useState(null);
+    const [editingAmount,setEditingAmount]=useState("");
+    const [deletingBudget,setDeletingBudget]=useState(null);
 
     // Load budgets whenever the selected month changes
     useEffect(() => {
@@ -57,6 +63,13 @@ function Budgets() {
         return () => {
             cancelled = true;
         };
+    }, [month]);
+
+    // Keep budget progress current when a transaction is added from the sidebar.
+    useEffect(() => {
+        const reload = async () => {try{setBudgets(await getBudgets(month));}catch(e){setError(e.message);}};
+        window.addEventListener('buynana:transactions-changed', reload);
+        return () => window.removeEventListener('buynana:transactions-changed', reload);
     }, [month]);
 
     // Format amounts as USD
@@ -120,6 +133,23 @@ function Budgets() {
         }
     }
 
+    async function handleEditBudget(event) {
+        event.preventDefault();
+        if(!editingBudget)return;
+        const amount=Number(editingAmount);
+        if(!Number.isFinite(amount)||amount<=0){setError('Enter a valid positive budget amount.');return;}
+        setSaving(true);
+        try{await updateBudget(editingBudget.budget_id,{category:editingBudget.category,budget_amount:amount,budget_month:editingBudget.budget_month});
+            setBudgets(await getBudgets(month));setEditingBudget(null);setError('');setSuccess('Budget updated.');}
+        catch(e){setError(e.message);}finally{setSaving(false);}
+    }
+    async function handleDeleteBudget(){
+        if(!deletingBudget)return;
+        setSaving(true);
+        try{await deleteBudget(deletingBudget.budget_id);setBudgets(await getBudgets(month));setDeletingBudget(null);setError('');setSuccess('Budget deleted.');}
+        catch(e){setError(e.message);setDeletingBudget(null);}finally{setSaving(false);}
+    }
+
     // Calculate overall budget totals
     const totalBudget = budgets.reduce(
         (total, budget) => total + budget.budget_amount,
@@ -136,22 +166,14 @@ function Budgets() {
     return (
         <div className="budgets-page">
 
-            <div className="budgets-header">
+            <header className="page-header">
                 <div>
                     <h1>Budgets</h1>
-                    <p>Manage your monthly spending limits</p>
+                    <p className="page-subtitle">Manage monthly spending limits and see how much remains.</p>
                 </div>
 
-                <input
-                    type="month"
-                    value={month}
-                    onChange={event => {
-                        setMonth(event.target.value);
-                        setSuccess("");
-                    }}
-                    aria-label="Select budget month"
-                />
-            </div>
+                <div className="page-header-actions"><span className="muted">Month</span><MonthPicker id="budget" value={month} onChange={value=>{setMonth(value);setSuccess("");}}/></div>
+            </header>
 
             {error && (
                 <p className="budgets-error" role="alert">
@@ -204,6 +226,11 @@ function Budgets() {
                             <option value="Entertainment">Entertainment</option>
                             <option value="Utilities">Utilities</option>
                             <option value="Other">Other</option>
+                            <option value="Subscriptions">Subscriptions</option>
+                            <option value="Groceries">Groceries</option>
+                            <option value="Rent">Rent</option>
+                            <option value="Health">Health</option>
+                            <option value="Misc">Misc</option>
                         </select>
                     </div>
 
@@ -223,7 +250,7 @@ function Budgets() {
                         />
                     </div>
 
-                    <button type="submit" disabled={saving}>
+                    <button type="submit" className="btn btn--primary" disabled={saving}>
                         {saving ? "Saving..." : "Create Budget"}
                     </button>
 
@@ -237,7 +264,7 @@ function Budgets() {
                 {loading ? (
                     <p>Loading budgets...</p>
                 ) : budgets.length === 0 ? (
-                    <p>No budgets configured for this month.</p>
+                    <div className="empty-state"><h3>No budgets for {monthLabel(month)}</h3><p>Choose a category and set a monthly limit using the form above.</p></div>
                 ) : (
                     <div className="budget-list">
 
@@ -293,6 +320,16 @@ function Budgets() {
                                             }
                                         </span>
                                     </div>
+                                    {editingBudget?.budget_id===budget.budget_id && <form className="budget-inline-edit" onSubmit={handleEditBudget}>
+                                      <label htmlFor={`edit-budget-${budget.budget_id}`}>Updated monthly limit ($)</label>
+                                      <input id={`edit-budget-${budget.budget_id}`} type="number" min="0.01" step="0.01" required value={editingAmount} onChange={e=>setEditingAmount(e.target.value)}/>
+                                      <button className="btn btn--primary btn--small" type="submit" disabled={saving}>Save</button>
+                                      <button className="btn btn--ghost btn--small" type="button" onClick={()=>setEditingBudget(null)}>Cancel</button>
+                                    </form>}
+                                    <div className="budget-item-actions">
+                                      <button className="btn btn--secondary btn--small" type="button" onClick={() => {setEditingBudget(budget);setEditingAmount(String(budget.budget_amount));}}>Edit limit</button>
+                                      <button className="btn btn--danger btn--small" type="button" onClick={() => setDeletingBudget(budget)}>Delete</button>
+                                    </div>
                                 </article>
                             );
                         })}
@@ -302,6 +339,9 @@ function Budgets() {
 
             </section>
 
+        <ConfirmDialog open={Boolean(deletingBudget)} title="Delete budget?" onCancel={()=>setDeletingBudget(null)} onConfirm={handleDeleteBudget} busy={saving}>
+          <p>Delete the {deletingBudget?.category} budget for {monthLabel(deletingBudget?.budget_month)}? Your transactions will remain recorded.</p>
+        </ConfirmDialog>
         </div>
     );
 }

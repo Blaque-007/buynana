@@ -1,18 +1,11 @@
 import { useEffect, useState } from "react";
-import { addTransaction } from "../services/transactionService";
+import { addTransaction, updateTransaction } from "../services/transactionService";
 import "./TransactionModal.css";
 
-const categories = [
-    "Food",
-    "Housing",
-    "Transport",
-    "Entertainment",
-    "Utilities",
-    "Health",
-    "Subscriptions",
-    "Savings",
-    "Other"
-];
+const categoriesByType = {
+    expense: ["Food", "Groceries", "Housing", "Rent", "Transport", "Utilities", "Subscriptions", "Health", "Entertainment", "Misc", "Other"],
+    income: ["Salary", "Business", "Freelance", "Gift", "Interest", "Other"]
+};
 
 // Get today's date in YYYY-MM-DD format
 function getTodayDate() {
@@ -41,26 +34,54 @@ function createInitialForm() {
 function TransactionModal({
     isOpen,
     onClose,
-    onTransactionAdded
+    onTransactionAdded,
+    initialTransaction = null
 }) {
     const [formData, setFormData] = useState(createInitialForm);
 
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
 
+    useEffect(() => {
+        if (!isOpen) return;
+        setFormData(initialTransaction ? {
+            description:initialTransaction.description,
+            amount:String(initialTransaction.amount),
+            type:initialTransaction.type,
+            category:initialTransaction.category,
+            transaction_date:initialTransaction.transaction_date,
+            is_recurring:initialTransaction.is_recurring===1,
+            recurring_frequency:initialTransaction.recurring_frequency ?? 'monthly'
+        } : createInitialForm());
+        setError('');
+    }, [isOpen,initialTransaction]);
+
     // Close using Escape
     useEffect(() => {
         if (!isOpen) return;
 
+        const dialog = document.querySelector('.transaction-modal[role="dialog"]');
+        const previousFocus = document.activeElement;
+        const originalOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+        dialog?.querySelector('[autofocus]')?.focus();
         function handleKeyDown(event) {
             if (event.key === "Escape" && !saving) {
+                event.preventDefault();
                 handleClose();
             }
+            if (event.key === "Tab" && dialog) {
+                const focusable = [...dialog.querySelectorAll('button:not([disabled]), input:not([disabled]), select:not([disabled]), a[href]')];
+                if (!focusable.length) return;
+                const first = focusable[0], last = focusable[focusable.length - 1];
+                if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+                else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+            }
         }
-
         window.addEventListener("keydown", handleKeyDown);
-
         return () => {
+            document.body.style.overflow = originalOverflow;
+            previousFocus?.focus?.();
             window.removeEventListener("keydown", handleKeyDown);
         };
     }, [isOpen, saving]);
@@ -132,7 +153,8 @@ function TransactionModal({
                     : null
             };
 
-            await addTransaction(transaction);
+            if (initialTransaction) await updateTransaction(initialTransaction.transaction_id, transaction);
+            else await addTransaction(transaction);
 
             // Reset form after saving
             setFormData(createInitialForm());
@@ -171,15 +193,16 @@ function TransactionModal({
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="transaction-modal-title"
+                aria-describedby="transaction-modal-description"
             >
 
                 <div className="transaction-modal-header">
                     <div>
                         <h2 id="transaction-modal-title">
-                            Add Transaction
+                            {initialTransaction ? "Edit Transaction" : "Add Transaction"}
                         </h2>
 
-                        <p>Record your income or expenses</p>
+                        <p id="transaction-modal-description">Record your income or expenses</p>
                     </div>
 
                     <button
@@ -208,11 +231,12 @@ function TransactionModal({
                             onClick={() => {
                                 setFormData(previous => ({
                                     ...previous,
-                                    type: "expense"
+                                    type: "expense",
+                                    category: categoriesByType.expense[0]
                                 }));
                             }}
                         >
-                            Expense
+                            ↓ Expense
                         </button>
 
                         <button
@@ -225,11 +249,12 @@ function TransactionModal({
                             onClick={() => {
                                 setFormData(previous => ({
                                     ...previous,
-                                    type: "income"
+                                    type: "income",
+                                    category: categoriesByType.income[0]
                                 }));
                             }}
                         >
-                            Income
+                            ↑ Income
                         </button>
                     </div>
 
@@ -285,7 +310,8 @@ function TransactionModal({
                             value={formData.category}
                             onChange={handleChange}
                         >
-                            {categories.map(category => (
+                            {!categoriesByType[formData.type].includes(formData.category) && <option value={formData.category}>{formData.category}</option>}
+                            {categoriesByType[formData.type].map(category => (
                                 <option key={category} value={category}>
                                     {category}
                                 </option>
@@ -310,6 +336,9 @@ function TransactionModal({
                         />
                     </div>
 
+                    {formData.transaction_date > getTodayDate() && (
+                        <p className="transaction-modal-date-note" role="status">This is a future-dated transaction. It will appear as Scheduled and won't change today's balance until its date.</p>
+                    )}
                     {/* Recurring checkbox */}
 
                     <div className="transaction-modal-recurring">
@@ -389,7 +418,7 @@ function TransactionModal({
                         >
                             {saving
                                 ? "Saving..."
-                                : "Save Transaction"}
+                                : initialTransaction ? "Save Changes" : "Save Transaction"}
                         </button>
                     </div>
 

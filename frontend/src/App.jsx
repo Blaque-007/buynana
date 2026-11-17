@@ -1,3 +1,4 @@
+import "./App.css";
 import {
     BrowserRouter,
     Routes,
@@ -5,7 +6,6 @@ import {
 } from "react-router-dom";
 
 import MainLayout from "./layouts/MainLayout";
-import TransactionTest from "./pages/TransactionTest";
 import Dashboard from "./pages/Dashboard";
 import Budgets from "./pages/Budgets";
 import Forecast from "./pages/Forecast";
@@ -17,11 +17,6 @@ function App() {
         <BrowserRouter>
             <Routes>
                 <Route element={<MainLayout />}>
-                <Route
-                    path="/transaction-test"
-                    element={<TransactionTest />}
-                    />
-
                     <Route
                         path="/"
                         element={<Dashboard />}
@@ -46,6 +41,8 @@ function App() {
                         path="/settings"
                         element={<Settings />}
                     />
+
+                    <Route path="*" element={<div role="alert"><h1>Page not found</h1><p>Choose a page from the BuyNana sidebar.</p></div>} />
 
                 </Route>
             </Routes>

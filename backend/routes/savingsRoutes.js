@@ -11,7 +11,7 @@ function isValidAmount(value) {
     return (
         typeof value === "number" &&
         Number.isFinite(value) &&
-        value > 0
+        value > 0 && Math.round(value * 100) / 100 === value
     );
 }
 
@@ -32,6 +32,7 @@ function getGoals(includeArchived = false) {
             g.goal_id,
             g.goal_name,
             g.target_amount,
+            g.monthly_allocation,
             g.created_at,
             g.is_archived,
 
@@ -83,12 +84,13 @@ router.get("/goals", (req, res) => {
 
 router.post("/goals", (req, res) => {
     try {
-        const { goal_name, target_amount } = req.body;
+        const { goal_name, target_amount, monthly_allocation = 0 } = req.body ?? {};
 
         if (
             typeof goal_name !== "string" ||
             !goal_name.trim() ||
-            !isValidAmount(target_amount)
+            !isValidAmount(target_amount) ||
+            typeof monthly_allocation !== 'number' || !Number.isFinite(monthly_allocation) || monthly_allocation < 0 || Math.round(monthly_allocation*100)/100 !== monthly_allocation
         ) {
             return res.status(400).json({
                 error: "A goal name and positive target amount are required"
@@ -98,12 +100,12 @@ router.post("/goals", (req, res) => {
         const result = db.prepare(`
             INSERT INTO savings_goals (
                 goal_name,
-                target_amount
+                target_amount, monthly_allocation
             )
-            VALUES (?, ?)
+            VALUES (?, ?, ?)
         `).run(
             goal_name.trim(),
-            target_amount
+            target_amount, monthly_allocation
         );
 
         const goal = getGoals().find(
@@ -134,12 +136,13 @@ router.put("/goals/:id", (req, res) => {
         }
 
         const id = Number(req.params.id);
-        const { goal_name, target_amount } = req.body;
+        const { goal_name, target_amount, monthly_allocation = 0 } = req.body ?? {};
 
         if (
             typeof goal_name !== "string" ||
             !goal_name.trim() ||
-            !isValidAmount(target_amount)
+            !isValidAmount(target_amount) ||
+            typeof monthly_allocation !== 'number' || !Number.isFinite(monthly_allocation) || monthly_allocation < 0 || Math.round(monthly_allocation*100)/100 !== monthly_allocation
         ) {
             return res.status(400).json({
                 error: "Invalid savings goal information"
@@ -172,11 +175,11 @@ router.put("/goals/:id", (req, res) => {
 
         db.prepare(`
             UPDATE savings_goals
-            SET goal_name = ?, target_amount = ?
+            SET goal_name = ?, target_amount = ?, monthly_allocation = ?
             WHERE goal_id = ?
         `).run(
             goal_name.trim(),
-            target_amount,
+            target_amount, monthly_allocation,
             id
         );
 
@@ -279,7 +282,7 @@ router.post("/goals/:id/contributions", (req, res) => {
                 WHERE goal_id = ?
             `).get(id).total;
 
-            if (saved + amount > goal.target_amount) {
+            if (Math.round((saved + amount) * 100) > Math.round(goal.target_amount * 100)) {
                 return {
                     status: 400,
                     error: "Contribution exceeds the remaining goal amount"
@@ -298,6 +301,7 @@ router.post("/goals/:id/contributions", (req, res) => {
                         ), 0
                     ) AS net_amount
                 FROM transactions
+                WHERE transaction_date <= date('now')
             `).get();
 
             // All savings contributions, including archived goals,

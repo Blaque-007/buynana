@@ -58,6 +58,7 @@ function SavingsGoals() {
 
   async function handleSaved() {
     await loadGoals();
+    window.dispatchEvent(new Event("buynana:savings-changed"));
     setError("");
     handleCancel();
   }
@@ -74,6 +75,7 @@ function SavingsGoals() {
 
   async function handleContributionSaved() {
     await loadGoals();
+    window.dispatchEvent(new Event("buynana:savings-changed"));
     setError("");
     setContributingGoal(null);
   }
@@ -94,6 +96,7 @@ function SavingsGoals() {
     try {
       await deleteSavingsGoal(goal.goal_id);
       await loadGoals();
+      window.dispatchEvent(new Event("buynana:savings-changed"));
 
       setEditingGoal(null);
       setShowForm(false);
@@ -192,6 +195,9 @@ function SavingsGoals() {
                   <span>{formatCurrency(goal.target_amount)} target</span>
                 </div>
 
+                {goal.monthly_allocation > 0 && (
+                  <p className="savings-goal-remaining">Planned: {formatCurrency(goal.monthly_allocation)}/month</p>
+                )}
                 <p className="savings-goal-remaining">
                   {formatCurrency(goal.remaining_amount)} remaining
                 </p>

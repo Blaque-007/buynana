@@ -1,24 +1,17 @@
-# Dependencies
+# Dependencies / builds
 node_modules/
-
-# Environment variables and secrets
-.env
-.env.*
-!.env.example
-
-# Local SQLite database
+dist/
+build/
+# Local-only data and secrets
 *.db
 *.db-shm
 *.db-wal
-
-# Build files
-dist/
-build/
-
-# Logs
-*.log
-
-# Editor and OS files
+*.sqlite
+.env
+.env.*
+!.env.example
+# IDE / OS / logs
 .vscode/
 .DS_Store
 Thumbs.db
+*.log

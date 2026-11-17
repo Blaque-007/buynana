@@ -1,254 +1,72 @@
-/* ============================================================
-   BUYNANA FORECAST PAGE
-   ============================================================ */
-
-.forecast-page {
-    width: 100%;
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 24px;
-    color: #1c1d19;
-}
-
-.forecast-header {
-    margin-bottom: 28px;
-}
-
-.forecast-header h1 {
-    font-size: 32px;
-    font-weight: 700;
-    margin-bottom: 8px;
-}
-
-.forecast-header p {
-    color: #62665d;
-    font-size: 15px;
-}
-
-/* ============================================================
-   FORECAST PANEL
-   ============================================================ */
-
-.forecast-panel {
-    background: #ffffff;
-    border: 1px solid #e4e5df;
-    border-radius: 16px;
-    padding: 28px;
-    margin-bottom: 32px;
-}
-
-.forecast-panel-heading {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 16px;
-    margin-bottom: 24px;
-}
-
-.forecast-panel-heading h2 {
-    font-size: 22px;
-    margin-bottom: 6px;
-}
-
-.forecast-panel-heading p {
-    color: #62665d;
-    font-size: 14px;
-}
-
-.forecast-month {
-    background: #eceadd;
-    color: #1c1d19;
-    padding: 8px 14px;
-    border-radius: 8px;
-    font-weight: 600;
-}
-
-/* ============================================================
-   AUTOMATIC SUGGESTIONS
-   ============================================================ */
-
-.forecast-suggestions {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 16px;
-    margin-bottom: 28px;
-}
-
-.forecast-suggestion-card {
-    background: #f6f6f2;
-    border: 1px solid #e4e5df;
-    border-radius: 12px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.forecast-suggestion-card span {
-    font-size: 13px;
-    color: #62665d;
-}
-
-.forecast-suggestion-card strong {
-    font-size: 24px;
-    color: #1f2b37;
-}
-
-.forecast-suggestion-card small {
-    color: #62665d;
-    overflow-wrap: anywhere;
-}
-
-/* ============================================================
-   FORECAST INPUTS
-   ============================================================ */
-
-.forecast-form {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 20px;
-}
-
-.forecast-input-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.forecast-input-group label {
-    font-weight: 600;
-    font-size: 14px;
-}
-
-.forecast-input-group input {
-    border: 1px solid #c9cdc5;
-    border-radius: 8px;
-    padding: 12px;
-    font-size: 16px;
-    background: white;
-    color: #1c1d19;
-}
-
-.forecast-input-group input:focus-visible {
-    outline: 3px solid #1f2b37;
-    outline-offset: 2px;
-}
-
-.forecast-warning {
-    grid-column: 1 / -1;
-    background: #fff4d6;
-    color: #6b4c00;
-    border-radius: 8px;
-    padding: 14px;
-    font-size: 14px;
-}
-
-.forecast-generate-button {
-    grid-column: 1 / -1;
-    background: #1f2b37;
-    color: #ffffff;
-    border: none;
-    border-radius: 10px;
-    padding: 14px 20px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    min-height: 48px;
-}
-
-.forecast-generate-button:hover {
-    background: #354657;
-}
-
-.forecast-generate-button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-/* ============================================================
-   FORECAST RESULTS
-   ============================================================ */
-
-.forecast-results {
-    margin-top: 28px;
-    padding-top: 24px;
-    border-top: 1px solid #e4e5df;
-}
-
-.forecast-results h3 {
-    margin-bottom: 18px;
-}
-
-.forecast-results-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 16px;
-}
-
-.forecast-result-card {
-    background: #f6f6f2;
-    border-radius: 12px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.forecast-result-card span {
-    color: #62665d;
-    font-size: 13px;
-}
-
-.forecast-result-card strong {
-    font-size: 26px;
-}
-
-.forecast-balance {
-    background: #b4eacf;
-}
-
-.forecast-method {
-    margin-top: 18px;
-    font-size: 13px;
-    color: #62665d;
-    line-height: 1.8;
-}
-
-.forecast-error {
-    margin-top: 16px;
-    padding: 12px;
-    background: #ffe7e7;
-    color: #8b1e1e;
-    border-radius: 8px;
-}
-
-/* ============================================================
-   SAVINGS GOALS
-   ============================================================ */
-
-.forecast-savings-section {
-    margin-top: 32px;
-}
-
-/* ============================================================
-   RESPONSIVE DESKTOP LAYOUT
-   ============================================================ */
-
-@media (max-width: 900px) {
-    .forecast-suggestions,
-    .forecast-results-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .forecast-form {
-        grid-template-columns: 1fr;
-    }
-
-    .forecast-page {
-        padding: 16px;
-    }
-
-    .forecast-panel {
-        padding: 20px;
-    }
-}
+.forecast-panel {padding:28px;margin-bottom:22px}
+.forecast-panel>.panel-header {margin-bottom:24px}
+.forecast-suggestions {display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:13px;margin-bottom:27px}
+.forecast-suggestion-card {grid-column:span 2}
+.forecast-suggestion-card:nth-child(4),.forecast-suggestion-card:nth-child(5) {grid-column:span 3}
+.forecast-suggestion-card {border:1px solid var(--line);background:var(--surface-soft);padding:17px 18px;display:flex;flex-direction:column;gap:7px;border-radius:12px;min-height:136px}
+.forecast-suggestion-card span {font-size:.88rem;font-weight:700;color:#42594b}
+.forecast-suggestion-card strong {font-size:1.54rem;letter-spacing:-.025em;line-height:1.24;overflow-wrap:anywhere}
+.forecast-suggestion-card small {color:var(--muted);font-size:.8rem;line-height:1.45}
+.forecast-form {border-top:1px solid var(--line);padding-top:25px}
+.forecast-input-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 24px}
+.forecast-input-group {display:flex;flex-direction:column;gap:8px;min-width:0}
+.forecast-input-heading {display:flex;align-items:center;justify-content:space-between;gap:9px;flex-wrap:wrap}
+.forecast-input-heading label,.forecast-input-group>label {font-size:.93rem}
+.mode-switch {display:flex;border:1px solid #c3d2c7;border-radius:8px;overflow:hidden;background:#f0f5ef;flex-shrink:0}
+.mode-switch button {background:transparent;color:#314e3e;border:0;min-height:34px;padding:7px 13px;margin:0;font-size:.83rem;font-weight:700}
+.mode-switch button.selected {background:#174e3a;color:#fff}
+.currency-input {position:relative}
+.currency-input span {position:absolute;top:50%;left:15px;transform:translateY(-50%);color:#334b3c;font-weight:750}
+.currency-input input {width:100%;padding-left:31px;background:var(--surface)}
+.currency-input input::-webkit-inner-spin-button,.currency-input input::-webkit-outer-spin-button {-webkit-appearance:none;margin:0}
+.currency-input input[type=number] {-moz-appearance:textfield;appearance:textfield}
+.automatic-field {display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:46px;background:#f3f7f2;border:1px solid var(--line);border-radius:9px;padding:9px 13px}
+.automatic-field span {font-weight:750;color:#143f30}
+.automatic-field small {font-size:.78rem;color:#41624e}
+.automatic-field--missing {background:#fff6e3;border-color:#e4d5a9}
+.automatic-field--missing span {color:#755317}
+.forecast-input-group select {width:100%}
+.forecast-input-group .field-help {margin:0;line-height:1.5}
+.forecast-expense-confirmation {margin-top:21px;display:grid;gap:12px}
+.forecast-expense-confirmation .notice {margin:0}
+.forecast-confirmation-label {display:flex;align-items:flex-start;gap:12px;border:1px solid var(--line);border-radius:10px;padding:13px;background:#f8fbf8;line-height:1.5;font-size:.9rem;cursor:pointer}
+.forecast-confirmation-label input {min-height:19px;width:19px;height:19px;flex-shrink:0;accent-color:var(--accent);margin:2px 0 0}
+.forecast-form-actions {display:flex;align-items:center;gap:14px;margin-top:25px;flex-wrap:wrap}
+.forecast-error {margin:16px 0}
+.forecast-results {border-top:2px solid var(--line);padding-top:25px;margin-top:27px}
+.forecast-results .panel-header {margin-bottom:16px}
+.forecast-results--stale .forecast-results-grid,.forecast-results--stale .forecast-chart-panel {opacity:.5}
+.forecast-results-grid {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:18px}
+.forecast-result-card {display:flex;flex-direction:column;gap:10px;padding:17px;min-width:0;background:#f5f8f4;border:1px solid var(--line);border-radius:12px}
+.forecast-result-card span {font-size:.85rem;font-weight:700;color:#3c5146}
+.forecast-result-card strong {font-size:clamp(1.3rem,2vw,1.8rem);letter-spacing:-.035em;overflow-wrap:anywhere}
+.forecast-balance {background:#d8f2df;border-color:#b5dec2;border-top:4px solid #146b4d}
+.forecast-assumption {padding:14px 17px;border-radius:10px;color:#3f4e43;background:#edf3eb;border-left:4px solid #527560;line-height:1.65;font-size:.91rem}
+.forecast-sources {display:flex;gap:7px 16px;flex-wrap:wrap;margin:16px 0 22px;color:#40594a;font-size:.85rem}
+.forecast-sources span {background:#f0f4ee;border:1px solid var(--line);border-radius:9px;padding:7px 10px}
+.forecast-chart-panel {background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:22px;margin:18px 0}
+.chart-panel-heading {margin:0 0 12px}.chart-panel-heading h3 {margin:0 0 5px;font-size:1.12rem}.chart-panel-heading p {margin:0;color:var(--muted);font-size:.9rem}
+.chart-section {margin:20px 0;padding-top:9px;border-top:1px solid var(--line)}
+.chart-section h4 {margin:5px 0;font-size:1.02rem}.chart-section>p {margin:0 0 12px;color:var(--muted);font-size:.87rem}
+.chart-legend {display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin:13px 0 5px;font-size:.87rem;font-weight:650;color:#254638}
+.chart-legend span {display:inline-flex;align-items:center;gap:7px}
+.legend-swatch {display:inline-block;width:17px;height:14px;border-radius:3px}
+.legend-income {background:#18765a}.legend-expense {background:repeating-linear-gradient(135deg,#486579 0 5px,#d5ecf2 5px 7px)}.legend-savings {background:repeating-linear-gradient(0deg,#efbb58 0 4px,#76531b 4px 6px)}
+.legend-line {display:inline-block;width:20px;border-top:4px solid #066652}
+.chart-scroller {overflow-x:auto;margin:9px 0}
+.chart-svg {display:block;width:100%;min-width:540px;height:auto;max-height:320px}
+.chart-svg [tabindex] {cursor:pointer;outline:none}
+.chart-svg [tabindex]:focus {stroke:#ffab26!important;stroke-width:4px!important;filter:drop-shadow(0 0 3px #e4a231)}
+.chart-inspect {padding:10px 13px;margin:8px 0 20px;background:#f1f6f1;border-radius:9px;min-height:44px;color:#244838;font-size:.9rem}
+.forecast-projection-table {overflow-x:auto}
+.forecast-projection-table table {min-width:560px}
+.forecast-projection-table caption {font-weight:750;text-align:left;margin:14px 0;color:var(--ink)}
+.forecast-projection-table th:first-child,.forecast-projection-table td:first-child {text-align:left}
+.forecast-projection-table th:not(:first-child),.forecast-projection-table td:not(:first-child) {text-align:right;font-variant-numeric:tabular-nums}
+.forecast-projection-table tbody tr:nth-child(even){background:#f9fbf8}
+.forecast-model-note {color:var(--muted);font-size:.9rem;line-height:1.5}
+.forecast-seasonal-breakdown {margin-top:18px;border:1px solid var(--line);border-radius:12px;padding:16px;background:#f7faf6}
+.forecast-seasonal-breakdown summary {cursor:pointer;font-weight:750}
+.forecast-savings-section {margin-top:28px}
+@media(max-width:1040px){.forecast-suggestions{grid-template-columns:repeat(2,minmax(0,1fr))}.forecast-suggestion-card,.forecast-suggestion-card:nth-child(4),.forecast-suggestion-card:nth-child(5){grid-column:auto}.forecast-suggestion-card:nth-child(5){grid-column:1/-1}.forecast-results-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:690px){.forecast-panel{padding:18px}.forecast-suggestions,.forecast-input-grid,.forecast-results-grid{grid-template-columns:1fr}.forecast-suggestion-card,.forecast-suggestion-card:nth-child(5){grid-column:auto}.forecast-sources{flex-direction:column}.chart-svg{min-width:590px}}

@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3001/api/savings";
+const API_URL = "/api/savings";
 
 // Reusable helper for handling API responses
 async function handleResponse(response) {

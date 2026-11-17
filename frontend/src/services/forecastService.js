@@ -2,7 +2,7 @@
 // BUYNANA FORECAST API SERVICE
 // ============================================================
 
-const API_BASE_URL = "http://localhost:3001/api/forecast";
+const API_BASE_URL = "/api/forecast";
 
 // ============================================================
 // HANDLE API RESPONSES
@@ -37,26 +37,13 @@ export async function getForecastSuggestions() {
 // ============================================================
 
 export async function generateHybridForecast({
-    expectedIncome = null,
-    expectedExpenses = null
+    expectedIncome = null, expectedExpenses = null, expectedSavings = null,
+    confirmBudget = false, months = 3
 } = {}) {
-
-    const response = await fetch(
-        `${API_BASE_URL}/hybrid`,
-        {
-            method: "POST",
-
-            headers: {
-                "Content-Type": "application/json"
-            },
-
-            body: JSON.stringify({
-                expectedIncome,
-                expectedExpenses
-            })
-        }
-    );
-
+    const response = await fetch(`${API_BASE_URL}/hybrid`, {
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({expectedIncome,expectedExpenses,expectedSavings,confirmBudget,months})
+    });
     return handleResponse(response);
 }
 

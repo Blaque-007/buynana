@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3001/api/transactions";
+const API_URL = "/api/transactions";
 
 // Retrieve all transactions from SQLite through Express
 export async function getTransactions() {
@@ -32,7 +32,7 @@ export async function addTransaction(transaction) {
 // Delete a transaction
 export async function deleteTransaction(id) {
     const response = await fetch(
-        `http://localhost:3001/api/transactions/${id}`,
+        `/api/transactions/${id}`,
         {
             method: "DELETE"
         }
@@ -46,5 +46,13 @@ export async function deleteTransaction(id) {
         );
     }
 
+    return data;
+}
+export async function updateTransaction(id, transaction) {
+    const response = await fetch(`${API_URL}/${id}`, {
+        method: 'PUT', headers:{'Content-Type':'application/json'},body:JSON.stringify(transaction)
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Unable to edit transaction');
     return data;
 }

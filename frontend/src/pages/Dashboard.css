@@ -1,308 +1,34 @@
-/* Dashboard workspace */
-
-.dashboard-page {
-    width: 100%;
-    color: #11120e;
-}
-
-/* Top heading */
-
-.dashboard-topbar {
-    padding-bottom: 14px;
-    border-bottom: 1px solid #d8d6c8;
-}
-
-.dashboard-topbar h1 {
-    margin: 0;
-    font-size: 20px;
-    font-weight: 500;
-}
-
-/* Welcome section */
-
-.dashboard-heading {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    margin: 24px 0;
-}
-
-.dashboard-heading h2 {
-    margin: 0;
-    font-size: 24px;
-}
-
-.dashboard-heading span {
-    font-size: 14px;
-}
-
-/* Summary cards */
-
-.dashboard-summary {
-    display: grid;
-    grid-template-columns: 2.5fr 1fr 1fr 1fr;
-    gap: 12px;
-
-    margin-bottom: 24px;
-}
-
-.financial-card {
-    min-height: 105px;
-    padding: 18px 16px;
-
-    border-radius: 8px;
-    border: 1px solid #cacabd;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 8px;
-}
-
-.financial-card__title {
-    font-size: 13px;
-    font-weight: 400;
-}
-
-.financial-card__value {
-    font-size: 22px;
-    font-weight: 600;
-}
-
-.financial-card--balance {
-    background: #1f2b37;
-    color: white;
-}
-
-.financial-card--income {
-    background: #dedede;
-    color: #11120e;
-}
-
-.financial-card--recurring {
-    background: #eceadd;
-    color: #11120e;
-}
-
-.financial-card--savings {
-    background: #b4eacf;
-    color: #477b52;
-}
-
-/* Dashboard panels */
-
-.dashboard-content {
-    display: grid;
-    grid-template-columns: 1.1fr 1fr;
-    gap: 18px;
-}
-
-.dashboard-panel {
-    border-radius: 8px;
-    overflow: hidden;
-    background: #252621;
-    border: 1px solid #c9c9bb;
-    min-height: 300px;
-}
-
-.dashboard-panel__header {
-    background: #e8e6d9;
-    padding: 14px;
-}
-
-.dashboard-panel__header h3 {
-    margin: 0;
-    font-size: 16px;
-    font-weight: 500;
-    color: #080a06;
-}
-
-.dashboard-panel__body {
-    padding: 16px;
-    color: #e9e8e1;
-    font-size: 14px;
-}
-
-/* Recent transactions */
-
-.recent-transactions {
-    display: flex;
-    flex-direction: column;
-}
-
-.recent-transaction {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    padding: 12px 0;
-    border-bottom: 1px solid #3a3c35;
-    gap: 12px;
-}
-
-.recent-transaction > div {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.recent-transaction strong {
-    font-size: 13px;
-}
-
-.recent-transaction span {
-    color: #aeb0a5;
-    font-size: 12px;
-}
-
-.amount-income {
-    color: #80d69a;
-}
-
-.amount-expense {
-    color: #ff9292;
-}
-
-.dashboard-error {
-    color: #b42318;
-}
-
-/* Responsive layout */
-
-@media (max-width: 1100px) {
-    .dashboard-summary {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .dashboard-content {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 600px) {
-    .dashboard-summary {
-        grid-template-columns: 1fr;
-    }
-
-    .dashboard-heading {
-        align-items: flex-start;
-        gap: 12px;
-        flex-direction: column;
-    }
-}
-/* Budget Overview */
-
-.budget-overview {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-}
-
-.budget-overview__summary {
-    display: flex;
-    justify-content: space-between;
-    gap: 16px;
-}
-
-.budget-overview__summary h2 {
-    margin: 8px 0 0;
-    font-size: 23px;
-    color: #ffffff;
-}
-
-.budget-overview__label {
-    font-size: 12px;
-    color: #b8bcb2;
-}
-
-.budget-overview__progress {
-    height: 12px;
-    background: #45483f;
-    border-radius: 20px;
-    overflow: hidden;
-}
-
-.budget-overview__progress-fill {
-    height: 100%;
-    background: #b4eacf;
-    border-radius: 20px;
-    transition: width 0.3s ease;
-}
-
-.budget-overview__progress-label {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    font-size: 12px;
-    color: #c6c9bf;
-}
-
-.budget-overview__categories {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding-top: 8px;
-    border-top: 1px solid #45483f;
-}
-
-.budget-overview__category {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    font-size: 12px;
-}
-
-.budget-overview__category span:last-child {
-    color: #b4eacf;
-    text-align: right;
-}
-
-.budget-overview__link,
-.budget-overview__empty a {
-    color: #b4eacf;
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 600;
-}
-
-.budget-overview__link:hover,
-.budget-overview__empty a:hover {
-    text-decoration: underline;
-}
-
-.budget-overview__empty {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-.dashboard-heading-actions {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-.dashboard-add-button {
-    padding: 12px 18px;
-    border: none;
-    border-radius: 8px;
-
-    background: #1f2b37;
-    color: #ffffff;
-
-    font-size: 13px;
-    font-weight: 600;
-
-    cursor: pointer;
-}
-
-.dashboard-add-button:hover {
-    background: #34485c;
-}
-
-@media (max-width: 700px) {
-    .dashboard-heading-actions {
-        flex-wrap: wrap;
-    }
-}
+.dashboard-summary {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:23px}
+.financial-card {display:flex;flex-direction:column;justify-content:flex-start;gap:11px;min-height:157px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 20px;box-shadow:var(--shadow)}
+.financial-card:first-child {border-top:4px solid var(--accent)}
+.financial-card__title {font-size:.9rem;font-weight:700;color:#3a5146}
+.financial-card__value {font-size:clamp(1.42rem,2vw,1.85rem);line-height:1.18;letter-spacing:-.035em;color:var(--ink);white-space:nowrap}
+.financial-card__hint {margin-top:auto;font-size:.81rem;color:var(--muted);line-height:1.45}
+.dashboard-content {display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+.dashboard-panel {border:1px solid var(--line);background:var(--surface);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);min-width:0;min-height:380px}
+.panel-intro {color:var(--muted);font-size:.88rem;margin:-6px 0 23px}
+.budget-overview {display:flex;flex-direction:column;gap:17px}
+.budget-overview__summary {display:flex;justify-content:space-between;gap:20px}
+.budget-overview__summary > div {display:flex;flex-direction:column;gap:5px}
+.budget-overview__summary > div:last-child {text-align:right}
+.budget-overview__summary strong {font-size:1.48rem;letter-spacing:-.025em}
+.budget-overview__label {font-size:.85rem;color:var(--muted)}
+.budget-overview__progress {height:12px;border-radius:100px;background:#e0e8df;overflow:hidden}
+.budget-overview__progress span {display:block;height:100%;background:#187052;border-radius:inherit}
+.budget-overview__progress-label {display:flex;justify-content:space-between;gap:10px;font-size:.84rem;color:#395146}
+.budget-overview__categories {border-top:1px solid var(--line);padding-top:13px;display:grid;gap:10px}
+.budget-overview__category {display:flex;justify-content:space-between;gap:15px;align-items:center;font-size:.9rem}
+.budget-overview__category strong {font-size:.87rem}
+.budget-explainer,.dashboard-footnote {color:var(--muted);font-size:.85rem;line-height:1.5}
+.dashboard-footnote {margin:18px 0}
+.recent-transactions {display:grid;gap:0}
+.recent-transaction {display:flex;align-items:center;gap:13px;padding:14px 0;border-bottom:1px solid var(--line)}
+.recent-transaction:last-child {border-bottom:0}
+.transaction-symbol {display:grid;place-items:center;flex-shrink:0;width:36px;height:36px;border-radius:11px;font-size:1.15rem;font-weight:800;background:#fce7e6;color:#862f3a}
+.transaction-symbol--income {background:#d9efe3;color:#195a3f}
+.recent-transaction__detail {display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}
+.recent-transaction__detail strong {font-size:.94rem;overflow-wrap:anywhere}
+.recent-transaction__detail span {font-size:.82rem;color:var(--muted);line-height:1.5}
+.recent-transaction__amount {font-size:.96rem;margin-left:auto;text-align:right;white-space:nowrap}
+@media(max-width:1150px){.dashboard-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard-content{grid-template-columns:1fr}}
+@media(max-width:520px){.dashboard-summary{grid-template-columns:1fr}.dashboard-panel{padding:18px;min-height:0}.recent-transaction__amount{font-size:.88rem}}

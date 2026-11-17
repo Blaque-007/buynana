@@ -218,4 +218,18 @@
 .transaction-modal select:focus-visible {
     outline: 3px solid #438b69;
     outline-offset: 2px;
-}
+}/* Shared BuyNana dialog treatment */
+.transaction-modal-overlay {background:rgba(13,36,28,.66);z-index:1000}
+.transaction-modal {background:#fff;color:var(--ink);border:1px solid var(--line);box-shadow:0 25px 70px #102a2544}
+.transaction-modal-header p {font-size:.88rem;color:var(--muted)}
+.transaction-modal-field label,.transaction-modal-recurring label {font-size:.91rem}
+.transaction-modal-field input,.transaction-modal-field select {min-height:44px;font-size:1rem}
+.transaction-modal-type button {min-height:46px;margin:0;font-size:.94rem}
+.transaction-modal-close {min-width:44px;min-height:44px;margin:-9px -7px 0 0;border-radius:9px}
+.transaction-modal-actions button {min-height:44px;font-size:.94rem;margin:0}
+.transaction-modal-cancel {border:1px solid #c4d4c8;background:#f0f4ef}
+.transaction-modal-submit {background:#155d45;color:#fff}
+.transaction-modal-submit:hover {background:#0e4935}
+.transaction-modal-recurring {background:#f2f6f2;border-color:#ceddd1}
+.transaction-modal-recurring p {font-size:.83rem;color:#405449}
+.transaction-modal-date-note {background:#fff3db;color:#704b0c;padding:12px;border-radius:9px;font-size:.88rem}
